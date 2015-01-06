@@ -270,7 +270,7 @@
     proto.applyShaderParams = function () {
         var node = this._node;
         var program = this._shaderProgram;
-        if (node && program) {
+        if (node && program && program._programObj) {
             var gl = program._glContext;
             if (node._shaderParams) {
                 cc.each(node._shaderParams, function(val, key){
