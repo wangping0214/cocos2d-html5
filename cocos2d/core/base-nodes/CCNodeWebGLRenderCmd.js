@@ -251,4 +251,51 @@
     proto.getShaderProgram = function () {
         return this._shaderProgram;
     };
+
+    var setUniform = function(location, p, gl) {
+        if (cc.isArray(p)) {
+            var len = p.length;
+            if (len === 1)
+                gl.uniform1fv(location, p);
+            else if (len === 2)
+                gl.uniform2fv(location, p);
+            else if (len === 3)
+                gl.uniform3fv(location, p);
+            else if (len === 4)
+                gl.uniform4fv(location, p);
+        }
+    };
+
+    // Added by yaochunhui
+    proto.applyShaderParams = function () {
+        var node = this._node;
+        var program = this._shaderProgram;
+        if (node && program) {
+            var gl = program._glContext;
+            if (node._shaderParams) {
+                cc.each(node._shaderParams, function(val, key){
+                    if (!val)
+                        return;
+                    var location = program.getUniformLocationForName(key);
+                    if (!location)
+                        return;
+                    setUniform(location, val, gl);
+                }, this);
+            }
+
+            if (node._shaderTextures) {
+                var texUnit = 1;
+                cc.each(node._shaderTextures, function(val, key){
+                    if (!val)
+                        return;
+                    var location = program.getUniformLocation(key);
+                    if (!location)
+                        return;
+                    cc.glBindTexture2DN(texUnit, val.getName());
+                    gl.uniform1i(location, texUnit);
+                    texUnit++;
+                }, this);
+            }
+        }
+    }
 })();

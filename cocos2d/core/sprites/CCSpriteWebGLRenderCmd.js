@@ -428,6 +428,7 @@
             if (locTexture._isLoaded) {
                 this._shaderProgram.use();
                 this._shaderProgram._setUniformForMVPMatrixWithMat4(this._stackMatrix);
+                this.applyShaderParams();
 
                 cc.glBlendFunc(node._blendFunc.src, node._blendFunc.dst);
                 //optimize performance for javascript
@@ -447,6 +448,7 @@
         } else {
             this._shaderProgram.use();
             this._shaderProgram._setUniformForMVPMatrixWithMat4(this._stackMatrix);
+            this.applyShaderParams();
 
             cc.glBlendFunc(node._blendFunc.src, node._blendFunc.dst);
             cc.glBindTexture2D(null);

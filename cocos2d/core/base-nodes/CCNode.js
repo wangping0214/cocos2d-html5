@@ -186,6 +186,7 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
 
     _renderCmd:null,
 
+
     /**
      * Constructor function, override it to extend the construction behavior, remember to call "this._super()" in the extended "ctor" function.
      * @function
@@ -216,6 +217,17 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
         this._realColor = cc.color(255, 255, 255, 255);
         this._cascadeColorEnabled = false;
         this._cascadeOpacityEnabled = false;
+        this._shaderParams = {};
+        this._shaderTextures = {};
+    }
+    ,
+
+    setShaderParam : function(name, values) {
+        this._shaderParams[name] = values
+    },
+
+    setShaderTexture : function(name, texture) {
+        this._shaderTextures[name] = texture
     },
 
     /**

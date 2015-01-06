@@ -53,6 +53,7 @@
 
         this._shaderProgram.use();
         this._shaderProgram._setUniformForMVPMatrixWithMat4(this._stackMatrix);
+        this.applyShaderParams();
         node._arrayMakeObjectsPerformSelector(node._children, cc.Node._stateCallbackType.updateTransform);
         cc.glBlendFunc(node._blendFunc.src, node._blendFunc.dst);
 
