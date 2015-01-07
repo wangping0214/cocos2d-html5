@@ -623,11 +623,22 @@ cc.GLProgram = cc.Class.extend(/** @lends cc.GLProgram# */{
         this._glContext.uniformMatrix4fv(this._uniforms[cc.UNIFORM_PMATRIX], false, cc.projection_matrix_stack.top.mat);
     },
 
+    _MVPMatrix: new cc.kmMat4(),
+
+    isCustomSprite: false,
+
     _setUniformForMVPMatrixWithMat4: function(modelViewMatrix){
         if(!modelViewMatrix)
             throw "modelView matrix is undefined.";
         this._glContext.uniformMatrix4fv(this._uniforms[cc.UNIFORM_MVMATRIX], false, modelViewMatrix.mat);
-        this._glContext.uniformMatrix4fv(this._uniforms[cc.UNIFORM_PMATRIX], false, cc.projection_matrix_stack.top.mat);
+
+        if (!this.isCustomSprite) {
+            this._glContext.uniformMatrix4fv(this._uniforms[cc.UNIFORM_PMATRIX], false, cc.projection_matrix_stack.top.mat);
+        }
+        else {
+            cc.kmMat4Multiply(this._MVPMatrix, cc.projection_matrix_stack.top, modelViewMatrix);
+            this._glContext.uniformMatrix4fv(this._uniforms[cc.UNIFORM_PMATRIX], false, this._MVPMatrix.mat);
+        }
     },
 
     /**
