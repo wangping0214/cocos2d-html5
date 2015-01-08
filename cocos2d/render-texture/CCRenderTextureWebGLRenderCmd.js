@@ -364,4 +364,21 @@
         this._dirtyFlag = 0;
         cc.kmGLPopMatrix();
     };
+
+    proto.readPixels = function() {
+        var node = this._node;
+        var texture = node._texture;
+        var width = texture._getWidth();
+        var height = texture._getHeight();
+        var pixels = new Uint8Array(4 * width * height); // be careful - allocate memory only once
+
+        var gl = cc._renderContext;
+        var _oldFBO = gl.getParameter(gl.FRAMEBUFFER_BINDING);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, this._fBO);
+        //gl.viewport(0, 0, width, height);
+        gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, _oldFBO);
+        return pixels;
+    }
+
 })();

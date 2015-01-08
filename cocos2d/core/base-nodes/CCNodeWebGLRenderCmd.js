@@ -288,10 +288,11 @@
                 cc.each(node._shaderTextures, function(val, key){
                     if (!val)
                         return;
-                    var location = program.getUniformLocation(key);
+                    var location = program.getUniformLocationForName(key);
                     if (!location)
                         return;
-                    cc.glBindTexture2DN(texUnit, val.getName());
+
+                    cc.glBindTexture2DN(texUnit, val);
                     gl.uniform1i(location, texUnit);
                     texUnit++;
                 }, this);
