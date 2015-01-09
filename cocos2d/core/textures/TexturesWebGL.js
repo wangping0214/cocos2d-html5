@@ -761,6 +761,10 @@ cc._tmp.WebGLTexture2D = function () {
          */
         removeLoadedEventListener: function (target) {
             this.removeEventListener("load", target);
+        },
+
+        retain: function() {
+
         }
     });
 };

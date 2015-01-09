@@ -402,6 +402,10 @@ if (cc._renderType === cc._RENDER_TYPE_CANVAS) {
          */
         removeLoadedEventListener: function (target) {
             this.removeEventListener("load", target);
+        },
+
+        retain: function() {
+
         }
     });
 
