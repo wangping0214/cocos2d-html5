@@ -986,31 +986,6 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
     var node = reader.readNodeGraphFromFile(ccbFilePath, owner, parentSize);
     var i;
     var callbackName, callbackNode, callbackControlEvents, outletName, outletNode;
-    // Assign owner callbacks & member variables
-    if (owner) {
-        // Callbacks
-        var ownerCallbackNames = reader.getOwnerCallbackNames();
-        var ownerCallbackNodes = reader.getOwnerCallbackNodes();
-        var ownerCallbackControlEvents = reader.getOwnerCallbackControlEvents();
-        for (i = 0; i < ownerCallbackNames.length; i++) {
-            callbackName = ownerCallbackNames[i];
-            callbackNode = ownerCallbackNodes[i];
-            callbackControlEvents = ownerCallbackControlEvents[i];
-            if(callbackNode instanceof cc.ControlButton)
-                callbackNode.addTargetWithActionForControlEvents(owner, owner[callbackName], callbackControlEvents);        //register all type of events
-            else
-                callbackNode.setCallback(owner[callbackName], owner);
-        }
-
-        // Variables
-        var ownerOutletNames = reader.getOwnerOutletNames();
-        var ownerOutletNodes = reader.getOwnerOutletNodes();
-        for (i = 0; i < ownerOutletNames.length; i++) {
-            outletName = ownerOutletNames[i];
-            outletNode = ownerOutletNodes[i];
-            owner[outletName] = outletNode;
-        }
-    }
 
     var nodesWithAnimationManagers = reader.getNodesWithAnimationManagers();
     var animationManagersForNodes = reader.getAnimationManagersForNodes();
@@ -1025,7 +1000,6 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
 
         var j;
         innerNode.animationManager = animationManager;
-
         var controllerName = animationManager.getDocumentControllerName();
         if (!controllerName) continue;
 
@@ -1038,6 +1012,11 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
         innerNode.controller = controller;
         controller.rootNode = innerNode;
 
+        if (innerNode === node)
+        {
+            owner = owner || controller
+        }
+
         // Callbacks
         var documentCallbackNames = animationManager.getDocumentCallbackNames();
         var documentCallbackNodes = animationManager.getDocumentCallbackNodes();
@@ -1046,10 +1025,13 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
             callbackName = documentCallbackNames[j];
             callbackNode = documentCallbackNodes[j];
             callbackControlEvents = documentCallbackControlEvents[j];
+            var callbackFunc = controller[callbackName];
+            if (!callbackFunc && controller.getCCBCallback)
+                callbackFunc = controller.getCCBCallback(callbackName);
             if(callbackNode instanceof cc.ControlButton)
-                callbackNode.addTargetWithActionForControlEvents(controller, controller[callbackName], callbackControlEvents);        //register all type of events
+                callbackNode.addTargetWithActionForControlEvents(controller, callbackFunc, callbackControlEvents);        //register all type of events
             else
-                callbackNode.setCallback(controller[callbackName], controller);
+                callbackNode.setCallback(callbackFunc, controller);
         }
 
         // Variables
@@ -1060,6 +1042,8 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
             outletNode = documentOutletNodes[j];
 
             controller[outletName] = outletNode;
+            if (controller.onCCBVar)
+                controller.onCCBVar(outletName, outletNode)
         }
 
         if (controller.onDidLoadFromCCB && cc.isFunction(controller.onDidLoadFromCCB))
@@ -1073,10 +1057,48 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
             var kfCallbackName = callbackSplit[1];
 
             if (callbackType == 1){ // Document callback
-                animationManager.setCallFunc(cc.callFunc(controller[kfCallbackName], controller), keyframeCallbacks[j]);
+                callbackFunc = controller[kfCallbackName];
+                if (!callbackFunc && controller.getCCBCallback)
+                    callbackFunc = controller.getCCBCallback(kfCallbackName);
+                animationManager.setCallFunc(cc.callFunc(callbackFunc, controller), keyframeCallbacks[j]);
             } else if (callbackType == 2 && owner) {// Owner callback
-                animationManager.setCallFunc(cc.callFunc(owner[kfCallbackName], owner), keyframeCallbacks[j]);
+                callbackFunc = owner[kfCallbackName];
+                if (!callbackFunc && owner.getCCBCallback)
+                    callbackFunc = owner.getCCBCallback(kfCallbackName);
+                animationManager.setCallFunc(cc.callFunc(callbackFunc, owner), keyframeCallbacks[j]);
             }
+        }
+    }
+
+    // Assign owner callbacks & member variables
+    if (owner) {
+        // Callbacks
+        var ownerCallbackNames = reader.getOwnerCallbackNames();
+        var ownerCallbackNodes = reader.getOwnerCallbackNodes();
+        var ownerCallbackControlEvents = reader.getOwnerCallbackControlEvents();
+        for (i = 0; i < ownerCallbackNames.length; i++) {
+            callbackName = ownerCallbackNames[i];
+            callbackNode = ownerCallbackNodes[i];
+            callbackControlEvents = ownerCallbackControlEvents[i];
+            callbackFunc = owner[callbackName];
+            if (!callbackFunc && owner.getCCBCallback)
+                callbackFunc = owner.getCCBCallback(callbackName);
+
+            if(callbackNode instanceof cc.ControlButton)
+                callbackNode.addTargetWithActionForControlEvents(owner, callbackFunc, callbackControlEvents);        //register all type of events
+            else
+                callbackNode.setCallback(callbackFunc, owner);
+        }
+
+        // Variables
+        var ownerOutletNames = reader.getOwnerOutletNames();
+        var ownerOutletNodes = reader.getOwnerOutletNodes();
+        for (i = 0; i < ownerOutletNames.length; i++) {
+            outletName = ownerOutletNames[i];
+            outletNode = ownerOutletNodes[i];
+            owner[outletName] = outletNode;
+            if (owner.onCCBVar)
+                owner.onCCBVar(outletName, outletNode)
         }
     }
 
