@@ -408,10 +408,10 @@
                 _y = rect.y + rect.height;
             }
             if (_x > texture.width) {
-                cc.error(cc._LogInfos.RectWidth, texture.url);
+                //cc.error(cc._LogInfos.RectWidth, texture.url);
             }
             if (_y > texture.height) {
-                cc.error(cc._LogInfos.RectHeight, texture.url);
+                //cc.error(cc._LogInfos.RectHeight, texture.url);
             }
         }
     };

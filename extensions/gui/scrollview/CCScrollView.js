@@ -37,7 +37,7 @@ cc.SCROLLVIEW_DIRECTION_VERTICAL = 1;
 cc.SCROLLVIEW_DIRECTION_BOTH = 2;
 
 var SCROLL_DEACCEL_RATE = 0.95;
-var SCROLL_DEACCEL_DIST = 1.0;
+var SCROLL_DEACCEL_DIST = 0.2;
 var BOUNCE_DURATION = 0.15;
 var INSET_RATIO = 0.2;
 var MOVE_INCH = 7.0/160.0;
@@ -163,6 +163,9 @@ cc.ScrollView = cc.Layer.extend(/** @lends cc.ScrollView# */{
 
             this.addChild(this._container);
             this._minScale = this._maxScale = 1.0;
+
+            this.updateInset();
+
             return true;
         }
         return false;
@@ -620,7 +623,8 @@ cc.ScrollView = cc.Layer.extend(/** @lends cc.ScrollView# */{
             this._touches.length = 0;
         } else {
             var listener = cc.EventListener.create({
-                event: cc.EventListener.TOUCH_ONE_BY_ONE
+                event: cc.EventListener.TOUCH_ONE_BY_ONE,
+                swallowTouches : true
             });
             if(this.onTouchBegan)
                 listener.onTouchBegan = this.onTouchBegan.bind(this);
