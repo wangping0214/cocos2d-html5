@@ -2118,7 +2118,7 @@ cc.game = /** @lends cc.game# */{
             }, false);
     },
 
-    _initConfig: function () {
+    _initConfig: function (testJsonFile) {
         var self = this, CONFIG_KEY = self.CONFIG_KEY;
         var _init = function (cfg) {
             cfg[CONFIG_KEY.engineDir] = cfg[CONFIG_KEY.engineDir] || "frameworks/cocos2d-html5";
@@ -2159,6 +2159,18 @@ cc.game = /** @lends cc.game# */{
             }
         }
         //init debug move to CCDebugger
+
+        if (testJsonFile) {
+            try {
+                var testText = cc.loader._loadTxtSync(testJsonFile);
+                var testData = JSON.parse(testText);
+                if (cc.isArray(self.config.jsList) && cc.isArray(testData))
+                    self.config.jsList = self.config.jsList.concat(testData)
+            }
+            catch (e) {
+
+            }
+        }
         cc._initSys(self.config, CONFIG_KEY);
     },
 
@@ -2228,7 +2240,7 @@ cc.game = /** @lends cc.game# */{
         }
     }
 };
-cc.game._initConfig();
+cc.game._initConfig(cc.testJsonFile);
 //+++++++++++++++++++++++++something about CCGame end+++++++++++++++++++++++++++++
 
 Function.prototype.bind = Function.prototype.bind || function (oThis) {
