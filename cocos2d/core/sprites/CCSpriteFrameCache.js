@@ -151,6 +151,13 @@ cc.spriteFrameCache = /** @lends cc.spriteFrameCache# */{
 
         //Is it a SpriteFrame plist?
         var dict = this._frameConfigCache[url] || cc.loader.getRes(url);
+        if (!dict) {
+            var txt = cc.loader._loadTxtSync(url);
+            if (txt) {
+                dict = cc.plistParser.parse(txt);
+                if (dict) cc.loader.cache[url] = dict;
+            }
+        }
         if(!dict || !dict["frames"])
             return;
 
