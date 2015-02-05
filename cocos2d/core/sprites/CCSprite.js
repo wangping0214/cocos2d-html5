@@ -604,6 +604,11 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
             locBlendFunc.src = src;
             locBlendFunc.dst = dst;
         }
+
+        if (locBlendFunc.src === cc.ONE){
+            locBlendFunc.src = cc.SRC_ALPHA;
+        }
+
         this._renderCmd.updateBlendFunc(locBlendFunc);
     },
 

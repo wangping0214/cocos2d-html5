@@ -233,7 +233,7 @@ cc.LabelBMFont = cc.SpriteBatchNode.extend(/** @lends cc.LabelBMFont# */{
         if (fntFile) {
             var newConf = cc.loader.getRes(fntFile);
             if (!newConf) {
-                cc.log("cc.LabelBMFont.initWithString(): Impossible to create font. Please check file");
+                cc.log("cc.LabelBMFont.initWithString(): Impossible to create font: ("+ fntFile +"). Please check file");
                 return false;
             }
 
@@ -710,7 +710,7 @@ cc.LabelBMFont = cc.SpriteBatchNode.extend(/** @lends cc.LabelBMFont# */{
             var newConf = cc.loader.getRes(fntFile);
 
             if (!newConf) {
-                cc.log("cc.LabelBMFont.setFntFile() : Impossible to create font. Please check file");
+                cc.log("cc.LabelBMFont.setFntFile() : Impossible to create font: ("+ fntFile +"). Please check file");
                 return;
             }
 
