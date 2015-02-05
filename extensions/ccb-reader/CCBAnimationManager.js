@@ -404,6 +404,12 @@ cc.BuilderAnimationManager = cc.Class.extend({
     debug:function () {
     },
 
+    getSequenceDuration: function (sequenceName) {
+        var id = this.getSequenceId(sequenceName);
+        if (id != -1)
+            return this._getSequence(id).getDuration();
+        return 0;
+    },
     _getBaseValue:function (node, propName) {
         var props = this._baseValues.objectForKey(node);
         if (props)
@@ -420,6 +426,10 @@ cc.BuilderAnimationManager = cc.Class.extend({
                 return element.getSequenceId();
         }
         return -1;
+    },
+
+    getSequenceId: function (sequenceName) {
+        this._getSequenceId(sequenceName)
     },
 
     _getSequence:function (sequenceId) {
