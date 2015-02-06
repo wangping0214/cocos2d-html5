@@ -429,7 +429,7 @@ cc.BuilderAnimationManager = cc.Class.extend({
     },
 
     getSequenceId: function (sequenceName) {
-        this._getSequenceId(sequenceName)
+        return this._getSequenceId(sequenceName)
     },
 
     _getSequence:function (sequenceId) {
