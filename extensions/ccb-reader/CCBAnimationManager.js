@@ -85,6 +85,16 @@ cc.BuilderAnimationManager = cc.Class.extend({
         this._sequences = seqs;
     },
 
+    getSequenceNames: function() {
+        var seqs = this._sequences;
+        var len = seqs.length;
+        var names = [];
+        for (var i = 0; i < len; i++) {
+            names.push(seqs[i].getName());
+        }
+        return names;
+    },
+
     getAutoPlaySequenceId:function () {
         return this._autoPlaySequenceId;
     },
