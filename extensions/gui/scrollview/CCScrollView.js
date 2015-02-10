@@ -403,6 +403,12 @@ cc.ScrollView = cc.Layer.extend(/** @lends cc.ScrollView# */{
     onTouchBegan:function (touch, event) {
         if (!this.isVisible())
             return false;
+
+        for (var c = this.parent; c != null; c = c.parent) {
+            if (!c.isVisible())
+                return false;
+        }
+
         //var frameOriginal = this.getParent().convertToWorldSpace(this.getPosition());
         //var frame = cc.rect(frameOriginal.x, frameOriginal.y, this._viewSize.width, this._viewSize.height);
         var frame = this._getViewRect();
