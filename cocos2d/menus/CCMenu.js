@@ -74,6 +74,7 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
         this._opacity = 255;
         this._selectedItem = null;
         this._state = -1;
+        this._triggerWhenTouchBegan = false;
 
         this._touchListener = cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
@@ -467,6 +468,9 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
             target._state = cc.MENU_STATE_TRACKING_TOUCH;
             target._selectedItem.selected();
             target._selectedItem.setNodeDirty();
+            if (target._triggerWhenTouchBegan) {
+                target._selectedItem.activate();
+            }
             return true;
         }
         return false;
@@ -481,7 +485,8 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
         if (target._selectedItem) {
             target._selectedItem.unselected();
             target._selectedItem.setNodeDirty();
-            target._selectedItem.activate();
+            if (!target._triggerWhenTouchBegan)
+                target._selectedItem.activate();
         }
         target._state = cc.MENU_STATE_WAITING;
     },
@@ -568,6 +573,10 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
             }
         }
         return null;
+    },
+
+    setTriggerWhenTouchBegan: function(enabled) {
+        this._triggerWhenTouchBegan = enabled;
     }
 });
 
