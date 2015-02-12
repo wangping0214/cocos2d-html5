@@ -892,7 +892,7 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
                                   cc.pointPointsToPixels(this._unflippedOffsetPositionFromCenter),
                                   cc.sizePointsToPixels(this._contentSize));
     },
-
+    getSpriteFrame: function() { return this.displayFrame(); },
     /**
      * Sets the batch node to sprite
      * @function
