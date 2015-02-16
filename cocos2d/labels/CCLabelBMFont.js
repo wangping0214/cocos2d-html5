@@ -747,6 +747,14 @@ cc.LabelBMFont = cc.SpriteBatchNode.extend(/** @lends cc.LabelBMFont# */{
         return this._fntFile;
     },
 
+    getBMFontFilePath: function () {
+        return this.getFntFile();
+    },
+
+    setBMFontFilePath: function (fntFile) {
+        return this.setFntFile(fntFile)
+    },
+
     setTexture: function(texture){
         this._renderCmd.setTexture(texture);
     },
