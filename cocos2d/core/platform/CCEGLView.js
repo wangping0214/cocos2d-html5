@@ -742,15 +742,18 @@ cc.EGLView = cc.Class.extend(/** @lends cc.view# */{
     },
 
     _convertTouchesWithScale: function(touches){
-        var locViewPortRect = this._viewPortRect, locScaleX = this._scaleX, locScaleY = this._scaleY, selTouch, selPoint, selPrePoint;
+        var locViewPortRect = this._viewPortRect, locScaleX = this._scaleX, locScaleY = this._scaleY, selTouch, selPoint, selPrePoint, selStartPoint;
         for( var i = 0; i < touches.length; i ++){
             selTouch = touches[i];
             selPoint = selTouch._point;
 	        selPrePoint = selTouch._prevPoint;
+            selStartPoint = selTouch._startPoint;
             selTouch._setPoint((selPoint.x - locViewPortRect.x) / locScaleX,
                 (selPoint.y - locViewPortRect.y) / locScaleY);
             selTouch._setPrevPoint((selPrePoint.x - locViewPortRect.x) / locScaleX,
                 (selPrePoint.y - locViewPortRect.y) / locScaleY);
+            selTouch._setStartPoint((selStartPoint.x - locViewPortRect.x) / locScaleX,
+                (selStartPoint.y - locViewPortRect.y) / locScaleY);
         }
     }
 });
