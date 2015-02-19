@@ -426,8 +426,17 @@
 
         if (locTexture) {
             if (locTexture._isLoaded) {
-                this._shaderProgram.use();
-                this._shaderProgram._setUniformForMVPMatrixWithMat4(this._stackMatrix);
+                var shader = this._shaderProgram;
+                shader.use();
+                if (shader._usesTime) {
+                    var time = cc.director.getTotalFrames() * cc.director.getAnimationInterval();
+
+                    shader.setUniformLocationWith4f(shader._uniforms[cc.UNIFORM_TIME], time / 10.0, time, time * 2, time * 4);
+                    shader.setUniformLocationWith4f(shader._uniforms[cc.UNIFORM_SINTIME], time / 8.0, time / 4.0, time / 2.0, Math.sin(time));
+                    shader.setUniformLocationWith4f(shader._uniforms[cc.UNIFORM_COSTIME], time / 8.0, time / 4.0, time / 2.0, Math.cos(time));
+                }
+                shader._setUniformForMVPMatrixWithMat4(this._stackMatrix);
+
                 this.applyShaderParams();
 
                 cc.glBlendFunc(node._blendFunc.src, node._blendFunc.dst);
