@@ -710,6 +710,16 @@ cc.LabelBMFont = cc.SpriteBatchNode.extend(/** @lends cc.LabelBMFont# */{
             var newConf = cc.loader.getRes(fntFile);
 
             if (!newConf) {
+                var txt = cc.loader._loadTxtSync(fntFile);
+                if (txt) {
+                    newConf = cc._fntLoader.parseFnt(txt, fntFile);
+                    if (newConf)
+                        cc.loader.cache[fntFile] = newConf;
+                }
+            }
+
+
+            if (!newConf) {
                 cc.log("cc.LabelBMFont.setFntFile() : Impossible to create font: ("+ fntFile +"). Please check file");
                 return;
             }
