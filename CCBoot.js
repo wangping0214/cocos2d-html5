@@ -1706,6 +1706,7 @@ cc._initSys = function (config, CONFIG_KEY) {
      */
     sys.cleanScript = function (jsfile) {
         // N/A in cocos2d-html5
+        cc.loader._jsCache[jsfile] = false;
     };
 
     /**
