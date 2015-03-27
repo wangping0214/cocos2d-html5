@@ -297,10 +297,12 @@
         if (this._shaderProgram && (this._shaderProgram !== shaderTex && this._shaderProgram !== shaderColor))
             cc.log("it is!");
 
-        if (texture && (!this._shaderProgram || this._shaderProgram === shaderColor))
+        if (texture && (!this._shaderProgram || this._shaderProgram === shaderColor)) {
             this._shaderProgram = cc.shaderCache.programForKey(cc.SHADER_POSITION_TEXTURECOLOR);
-        else if (!this._shaderProgram || this._shaderProgram === shaderTex)
+        }
+        else if (!texture && (!this._shaderProgram || this._shaderProgram === shaderTex)) {
             this._shaderProgram = cc.shaderCache.programForKey(cc.SHADER_POSITION_COLOR);
+        }
 
         if (!node._batchNode && node._texture != texture) {
             node._texture = texture;
