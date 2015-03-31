@@ -310,8 +310,13 @@ cc.eventManager = /** @lends cc.eventManager# */{
 
     _sortEventListenersOfSceneGraphPriorityDes : function(l1, l2){
         var locNodePriorityMap = cc.eventManager._nodePriorityMap;
-        if(!l1 || !l2 || !l1._getSceneGraphPriority() || !l2._getSceneGraphPriority())
+        
+        if(!l1 || !l1._getSceneGraphPriority()){
             return -1;
+        } else if (!l2 || !l2._getSceneGraphPriority()){
+            return 1;
+        }
+
         return locNodePriorityMap[l2._getSceneGraphPriority().__instanceId] - locNodePriorityMap[l1._getSceneGraphPriority().__instanceId];
     },
 
