@@ -226,10 +226,16 @@ cc.ProgressTimer = cc.Node.extend(/** @lends cc.ProgressTimer# */{
     setSprite: function(sprite){
         if (this._sprite != sprite) {
             this._sprite = sprite;
-            if(sprite)
-                this.setContentSize(sprite.width,sprite.height);
-            else
-                this.setContentSize(0,0);
+            if(sprite) {
+                this.setContentSize(sprite.width, sprite.height);
+                var self = this;
+                sprite.addEventListener("load", function(){
+                    self.setContentSize(sprite.width,sprite.height);
+                }, this);
+            }
+            else {
+                this.setContentSize(0, 0);
+            }
             this._renderCmd.releaseData();
         }
     },
