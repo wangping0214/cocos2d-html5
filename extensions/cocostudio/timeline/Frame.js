@@ -239,8 +239,7 @@ ccs.TextureFrame = ccs.Frame.extend({
      */
     onEnter: function(nextFrame){
         if(this._sprite){
-            var spriteFrame = cc.spriteFrameCache.getSpriteFrame(this._textureName);
-
+            var spriteFrame = cc.spriteFrameCache._spriteFrames[this._textureName];
             if(spriteFrame != null)
                 this._sprite.setSpriteFrame(spriteFrame);
             else
@@ -321,7 +320,7 @@ ccs.RotationFrame = ccs.Frame.extend({
      * @param {number} percent
      */
     apply: function(percent){
-        if (this._tween && this._betwennRotation != 0){
+        if (this._tween && this._betwennRotation !== 0){
             var rotation = this._rotation + percent * this._betwennRotation;
             this._node.setRotation(rotation);
         }
@@ -407,7 +406,7 @@ ccs.SkewFrame = ccs.Frame.extend({
      * @param {number} percent
      */
     apply: function(percent){
-        if (this._tween && (this._betweenSkewX != 0 || this._betweenSkewY != 0))
+        if (this._tween && (this._betweenSkewX !== 0 || this._betweenSkewY !== 0))
         {
             var skewx = this._skewX + percent * this._betweenSkewX;
             var skewy = this._skewY + percent * this._betweenSkewY;
@@ -505,7 +504,7 @@ ccs.RotationSkewFrame = ccs.SkewFrame.extend({
      * @param {number} percent
      */
     apply: function(percent){
-        if (this._tween && (this._betweenSkewX != 0 || this._betweenSkewY != 0)){
+        if (this._tween && (this._betweenSkewX !== 0 || this._betweenSkewY !== 0)){
             var skewx = this._skewX + percent * this._betweenSkewX;
             var skewy = this._skewY + percent * this._betweenSkewY;
 
@@ -577,7 +576,7 @@ ccs.PositionFrame = ccs.Frame.extend({
      * @param {number} percent
      */
     apply: function(percent){
-        if (this._tween && (this._betweenX != 0 || this._betweenY != 0)){
+        if (this._tween && (this._betweenX !== 0 || this._betweenY !== 0)){
             var p = cc.p(0, 0);
             p.x = this._position.x + this._betweenX * percent;
             p.y = this._position.y + this._betweenY * percent;
@@ -698,7 +697,7 @@ ccs.ScaleFrame = ccs.Frame.extend({
      * @param {number} percent
      */
     apply: function(percent){
-        if (this._tween && (this._betweenScaleX != 0 || this._betweenScaleY != 0)){
+        if (this._tween && (this._betweenScaleX !== 0 || this._betweenScaleY !== 0)){
             var scaleX = this._scaleX + this._betweenScaleX * percent;
             var scaleY = this._scaleY + this._betweenScaleY * percent;
 
@@ -860,6 +859,11 @@ ccs.InnerActionFrame = ccs.Frame.extend({
     _innerActionType: null,
     _startFrameIndex: null,
 
+    _endFrameIndex:0,
+    _singleFrameIndex: 0,
+    _enterWithName: false,
+    _animationName: "",
+
     ctor: function(){
         ccs.Frame.prototype.ctor.call(this);
 
@@ -872,7 +876,62 @@ ccs.InnerActionFrame = ccs.Frame.extend({
      * @param {ccs.Frame} nextFrame
      */
     onEnter: function(nextFrame){
-        //override
+        var innerActiontimeline = this._node.getActionByTag(this._node.getTag());
+        if (/*ccs.InnerActionType.SingleFrame*/"SingleFrame" === this._innerActionType){
+            innerActiontimeline.gotoFrameAndPause(this._singleFrameIndex);
+            return;
+        }
+
+        var innerStart = this._startFrameIndex;
+        var innerEnd = this._endFrameIndex;
+        if (this._enterWithName){
+            if (this._animationName === "-- ALL --"){
+                innerStart = 0;
+                innerEnd = innerActiontimeline.getDuration();
+            } else if(innerActiontimeline.IsAnimationInfoExists(this._animationName)) {
+                var info = innerActiontimeline.getAnimationInfo(this._animationName);
+                innerStart = info.startIndex;
+                innerEnd = info.endIndex;
+            }else{
+                cc.log("Animation %s not exists!", this._animationName);
+            }
+        }
+
+        var duration = this._timeline.getActionTimeline().getDuration();
+        var odddiff = duration - this._frameIndex - innerEnd + innerStart;
+        if (odddiff < 0){
+            innerEnd += odddiff;
+        }
+
+        if (ccs.InnerActionType.NoLoopAction === this._innerActionType){
+            innerActiontimeline.gotoFrameAndPlay(innerStart, innerEnd, false);
+        }else if (ccs.InnerActionType.LoopAction === this._innerActionType){
+            innerActiontimeline.gotoFrameAndPlay(innerStart, innerEnd, true);
+        }
+    },
+
+    setAnimationName: function(animationName){
+        if(!this._enterWithName){
+            cc.log(" cannot set aniamtioname when enter frame with index. setEnterWithName true firstly!");
+        }else{
+            this._animationName = animationName;
+        }
+    },
+
+    setSingleFrameIndex: function(frameIndex){
+        this._singleFrameIndex = frameIndex;
+    },
+
+    getSingleFrameIndex: function(){
+        return this._startFrameIndex;
+    },
+
+    setEnterWithName: function(isEnterWithName){
+        this._enterWithName = isEnterWithName;
+    },
+
+    getEnterWithName: function(){
+        return this._enterWithName;
     },
 
     /**
@@ -952,22 +1011,16 @@ ccs.ColorFrame = ccs.Frame.extend({
 
     ctor: function(){
         ccs.Frame.prototype.ctor.call(this);
-
-        this._alpha = 255;
-        this.color = cc.color(255, 255, 255);
+        this._color = cc.color(255, 255, 255);
     },
 
     /**
      * the execution of the callback
-     * @param {ccs.Frame} nextFrame
+     * @param {ccs.ColorFrame} nextFrame
      */
     onEnter: function(nextFrame){
-        this._node.setOpacity(this._alpha);
         this._node.setColor(this._color);
-
         if(this._tween){
-            this._betweenAlpha = nextFrame._alpha - this._alpha;
-
             var color = nextFrame._color;
             this._betweenRed   = color.r - this._color.r;
             this._betweenGreen = color.g - this._color.g;
@@ -981,16 +1034,19 @@ ccs.ColorFrame = ccs.Frame.extend({
      * @param {number} percent
      */
     apply: function(percent){
-        if (this._tween && (this._betweenAlpha !=0 || this._betweenRed != 0 || this._betweenGreen != 0 || this._betweenBlue != 0)){
-            var alpha = this._alpha + this._betweenAlpha * percent;
+        if (this._tween && (this._betweenAlpha !== 0 || this._betweenRed !== 0 || this._betweenGreen !== 0 || this._betweenBlue !== 0)){
 
             var color = cc.color(255, 255, 255);
             color.r = this._color.r + this._betweenRed   * percent;
             color.g = this._color.g + this._betweenGreen * percent;
             color.b = this._color.b + this._betweenBlue  * percent;
 
-            this._node.setOpacity(alpha);
             this._node.setColor(color);
+            if(this._alpha !== null){
+                var alpha = this._alpha + this._betweenAlpha * percent;
+                this._node.setOpacity(alpha);
+            }
+
         }
     },
 
@@ -1001,28 +1057,9 @@ ccs.ColorFrame = ccs.Frame.extend({
      */
     clone: function(){
         var frame = new ccs.ColorFrame();
-        frame.setAlpha(this._alpha);
         frame.setColor(this._color);
-
         frame._cloneProperty(this);
-
         return frame;
-    },
-
-    /**
-     * Set the alpha
-     * @param {Number} alpha
-     */
-    setAlpha: function(alpha){
-        this._alpha = alpha;
-    },
-
-    /**
-     * Gets the alpha
-     * @returns {Number}
-     */
-    getAlpha: function(){
-        return this._alpha;
     },
 
     /**
@@ -1052,6 +1089,59 @@ ccs.ColorFrame = ccs.Frame.extend({
 ccs.ColorFrame.create = function(){
     return new ccs.ColorFrame();
 };
+
+/**
+ * Alpha frame
+ * @class
+ * @extend ccs.Frame
+ */
+ccs.AlphaFrame = ccs.Frame.extend({
+
+    _alpha: null,
+    _betweenAlpha: null,
+
+    ctor: function(){
+        ccs.Frame.prototype.ctor.call(this);
+        this._alpha = 255;
+    },
+
+    onEnter: function(nextFrame){
+        this._node.setOpacity(this._alpha);
+        if(this._tween){
+            this._betweenAlpha = nextFrame._alpha - this._alpha;
+        }
+    },
+
+    apply: function(percent){
+        if (this._tween){
+            var alpha = this._alpha + this._betweenAlpha * percent;
+            this._node.setOpacity(alpha);
+        }
+    },
+
+    /**
+     * Set the alpha
+     * @param {Number} alpha
+     */
+    setAlpha: function(alpha){
+        this._alpha = alpha;
+    },
+
+    /**
+     * Gets the alpha
+     * @returns {Number}
+     */
+    getAlpha: function(){
+        return this._alpha;
+    },
+
+    clone: function(){
+        var frame = new ccs.AlphaFrame();
+        frame.setAlpha(this._alpha);
+        frame._cloneProperty(this);
+        return frame;
+    }
+});
 
 /**
  * Event frame
