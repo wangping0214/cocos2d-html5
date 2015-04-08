@@ -716,7 +716,8 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         _t._hasChildren = false;
 
         this._renderCmd._init();
-
+        if (!texture)
+            cc.log("texture null")
         var locTextureLoaded = texture.isLoaded();
         _t._textureLoaded = locTextureLoaded;
 
@@ -898,7 +899,6 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
             cc.pointPointsToPixels(this._unflippedOffsetPositionFromCenter),
             cc.sizePointsToPixels(this._contentSize));
     },
-    getSpriteFrame: function() { return this.displayFrame(); },
     /**
      * Sets the batch node to sprite
      * @function

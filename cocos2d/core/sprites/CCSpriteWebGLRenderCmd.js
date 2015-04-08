@@ -431,7 +431,7 @@
         //cc.assert(!_t._batchNode, "If cc.Sprite is being rendered by cc.SpriteBatchNode, cc.Sprite#draw SHOULD NOT be called");
 
         if (locTexture) {
-            if (locTexture._isLoaded) {
+            if (locTexture._textureLoaded) {
                 var shader = this._shaderProgram;
                 shader.use();
                 if (shader._usesTime) {

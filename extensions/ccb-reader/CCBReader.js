@@ -1068,7 +1068,6 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
         }
     }
 
-<<<<<<< HEAD
     // Assign owner callbacks & member variables
     if (owner) {
         // Callbacks
@@ -1100,10 +1099,10 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
                 owner.onCCBVar(outletName, outletNode)
         }
     }
-=======
     //auto play animations
-    animationManager.runAnimations(animationManager.getAutoPlaySequenceId(), 0);
->>>>>>> d47f061
+    var autoId = animationManager.getAutoPlaySequenceId();
+    if (autoId >= 0)
+        animationManager.runAnimations(autoId, 0);
 
     return node;
 };
