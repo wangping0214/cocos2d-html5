@@ -261,7 +261,7 @@ cc.BuilderReader = cc.Class.extend({
             data = cc.loader.loadBinarySync(realUrl);
             cc.loader.cache[ccbFileName] = data;
         }
-
+        if (!data) return null
         return this.readNodeGraphFromData(data, owner, parentSize, animationManager);
     },
 
