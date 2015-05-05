@@ -841,7 +841,9 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         var locTextureLoaded = newFrame.textureLoaded();
         if (!locTextureLoaded) {
             _t._textureLoaded = false;
+            _t._pendingTexture = pNewTexture;
             newFrame.addEventListener("load", function (sender) {
+                if (_t._pendingTexture !== pNewTexture) return;
                 _t._textureLoaded = true;
                 var locNewTexture = sender.getTexture();
                 if (locNewTexture !== _t._texture)
@@ -854,6 +856,7 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
             // update texture before updating texture rect
             if (pNewTexture !== _t._texture)
                 _t.texture = pNewTexture;
+            _t._pendingTexture = null
             _t.setTextureRect(newFrame.getRect(), newFrame.isRotated(), newFrame.getOriginalSize());
         }
         this._renderCmd._updateForSetSpriteFrame(pNewTexture);
@@ -942,13 +945,16 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
             texture = cc.textureCache.addImage(texture);
 
             if(!texture._textureLoaded){
+                this._pendingTexture = texture;
                 texture.addEventListener("load", function(){
+                    if (this._pendingTexture !== texture) return;
                     this._renderCmd._setTexture(texture);
                     this._changeRectWithTexture(texture.getContentSize());
                     this.setColor(this._realColor);
                     this._textureLoaded = true;
                 }, this);
             }else{
+                this._pendingTexture = null;
                 this._renderCmd._setTexture(texture);
                 this._changeRectWithTexture(texture.getContentSize());
                 this.setColor(this._realColor);
