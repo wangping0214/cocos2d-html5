@@ -771,6 +771,9 @@ cc._tmp.WebGLTexture2D = function () {
 
         retain: function() {
 
+        },
+        release: function() {
+
         }
     });
 };

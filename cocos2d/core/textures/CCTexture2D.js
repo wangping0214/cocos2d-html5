@@ -404,6 +404,7 @@ if (cc._renderType === cc._RENDER_TYPE_CANVAS) {
         },
 
         retain: function() {},
+        release: function() {},
         //hack for gray effect
         _grayElementObj: null,
         _backupElement: null,
