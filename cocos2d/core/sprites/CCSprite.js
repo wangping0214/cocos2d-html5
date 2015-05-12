@@ -856,7 +856,7 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
             // update texture before updating texture rect
             if (pNewTexture !== _t._texture)
                 _t.texture = pNewTexture;
-            _t._pendingTexture = null
+            _t._pendingTexture = null;
             _t.setTextureRect(newFrame.getRect(), newFrame.isRotated(), newFrame.getOriginalSize());
         }
         this._renderCmd._updateForSetSpriteFrame(pNewTexture);
@@ -952,12 +952,17 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
                     this._changeRectWithTexture(texture.getContentSize());
                     this.setColor(this._realColor);
                     this._textureLoaded = true;
+                    var rect = cc.rect(0, 0, texture.width, texture.height);
+                    this.setTextureRect(rect);
+
                 }, this);
             }else{
                 this._pendingTexture = null;
                 this._renderCmd._setTexture(texture);
                 this._changeRectWithTexture(texture.getContentSize());
                 this.setColor(this._realColor);
+                var rect = cc.rect(0, 0, texture.width, texture.height);
+                this.setTextureRect(rect);
                 this._textureLoaded = true;
             }
         }else{
