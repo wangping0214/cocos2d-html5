@@ -169,8 +169,6 @@ cc.ControlButton = cc.Control.extend(/** @lends cc.ControlButton# */{
     initWithLabelAndBackgroundSprite: function (label, backgroundSprite) {
         if (!label)
             throw "cc.ControlButton.initWithLabelAndBackgroundSprite(): label should be non-null";
-        if (!backgroundSprite)
-            throw "cc.ControlButton.initWithLabelAndBackgroundSprite(): backgroundSprite should be non-null";
         if (cc.Control.prototype.init.call(this, true)) {
             this._parentInited = true;
 
@@ -632,16 +630,17 @@ cc.ControlButton = cc.Control.extend(/** @lends cc.ControlButton# */{
                 this.removeChild(previousSprite, true);
         }
 
-        locTable[state] = sprite;
-        sprite.setVisible(false);
-        sprite.setAnchorPoint(0.5, 0.5);
-        this.addChild(sprite);
+        if (sprite) {
+            locTable[state] = sprite;
+            sprite.setVisible(false);
+            sprite.setAnchorPoint(0.5, 0.5);
+            this.addChild(sprite);
 
-        var locPreferredSize = this._preferredSize;
-        if (locPreferredSize.width !== 0 || locPreferredSize.height !== 0) {
-            sprite.setPreferredSize(locPreferredSize);
+            var locPreferredSize = this._preferredSize;
+            if (locPreferredSize.width !== 0 || locPreferredSize.height !== 0) {
+                sprite.setPreferredSize(locPreferredSize);
+            }
         }
-
         // If the current state if equal to the given state we update the layout
         if (this._state === state)
             this.needsLayout();
