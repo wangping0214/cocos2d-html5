@@ -399,6 +399,9 @@ cc.Audio = cc.Class.extend({
             var offset = this._currentTime % audio.buffer.duration;
             this._playOfWebAudio(offset);
         }
+        else {
+            this._playOfWebAudio(0);
+        }
     },
 
     _resumeOfAudio: function(){
