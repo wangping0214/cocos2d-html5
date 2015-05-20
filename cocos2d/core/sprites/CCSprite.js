@@ -827,6 +827,7 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         var _t = this;
         if(cc.isString(newFrame)){
             newFrame = cc.spriteFrameCache.getSpriteFrame(newFrame);
+            if (!newFrame) return;
             cc.assert(newFrame, cc._LogInfos.Sprite_setSpriteFrame)
         }
 
