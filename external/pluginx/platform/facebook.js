@@ -266,6 +266,10 @@ plugin.extend('facebook', {
         return this._userInfo ? this._userInfo['accessToken'] : null;
     },
 
+    canAutoLogin: function () {
+        return this.isLoggedIn()
+    },
+
     /**
      * Acquiring User ID
      * @return {String}
