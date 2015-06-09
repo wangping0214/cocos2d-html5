@@ -274,11 +274,11 @@
         var node = this._node;
         if (!node._texture || !node._texture.hasPremultipliedAlpha()) {
             node._blendFunc.src = cc.SRC_ALPHA;
-            node._blendFunc.dst = cc.ONE_MINUS_SRC_ALPHA;
+            //node._blendFunc.dst = cc.ONE_MINUS_SRC_ALPHA;
             node.opacityModifyRGB = false;
         } else {
             node._blendFunc.src = cc.BLEND_SRC;
-            node._blendFunc.dst = cc.BLEND_DST;
+            //node._blendFunc.dst = cc.BLEND_DST;
             node.opacityModifyRGB = true;
         }
     };
