@@ -5,8 +5,8 @@
              classpath="./compiler/compiler.jar"/>
     <target name="compile">
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="./../lib/cocos2d-js-v3.5-min.js">
-            <!--sourceMapOutputFile="./../lib/cocos2d-js-v3.5-sourcemap" sourceMapFormat="V3" -->
+                debug="false" output="./../lib/cocos2d-js-v3.6-min.js">
+            <!--sourceMapOutputFile="./../lib/cocos2d-js-v3.6-sourcemap" sourceMapFormat="V3" -->
             <sources dir="./../">
                 <file name="Base64Images.js"/>
                 <file name="CCBoot.js"/>
@@ -224,6 +224,8 @@
                 <file name="extensions/ccui/uiwidgets/UITextAtlas.js"/>
                 <file name="extensions/ccui/uiwidgets/UITextBMFont.js"/>
                 <file name="extensions/ccui/uiwidgets/UITextField.js"/>
+                <file name="extensions/ccui/uiwidgets/UIWebView.js"/>
+                <file name="extensions/ccui/uiwidgets/UIVideoPlayer.js"/>
                 <file name="extensions/ccui/uiwidgets/UIRichText.js"/>
                 <file name="extensions/ccui/uiwidgets/scroll-widget/UIScrollView.js"/>
                 <file name="extensions/ccui/uiwidgets/scroll-widget/UIListView.js"/>
@@ -298,8 +300,8 @@
 
     <target name="compile_core">
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="./../lib/cocos2d-js-v3.5-core-min.js">
-            <!--sourceMapOutputFile="./../lib/cocos2d-js-v3.5-core-sourcemap" sourceMapFormat="V3" -->
+                debug="false" output="./../lib/cocos2d-js-v3.6-core-min.js">
+            <!--sourceMapOutputFile="./../lib/cocos2d-js-v3.6-core-sourcemap" sourceMapFormat="V3" -->
             <sources dir="./../">
                 <file name="CCBoot.js"/>
                 <file name="cocos2d/core/platform/CCClass.js"/>
