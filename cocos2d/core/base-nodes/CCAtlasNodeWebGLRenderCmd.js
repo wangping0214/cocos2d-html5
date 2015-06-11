@@ -46,7 +46,7 @@
         var node = this._node;
         if (!this._textureAtlas.texture.hasPremultipliedAlpha()) {
             node._blendFunc.src = cc.SRC_ALPHA;
-            node._blendFunc.dst = cc.ONE_MINUS_SRC_ALPHA;
+            //node._blendFunc.dst = cc.ONE_MINUS_SRC_ALPHA;
         }
     };
 
