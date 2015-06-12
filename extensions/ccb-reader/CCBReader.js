@@ -1050,7 +1050,7 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
         var keyframeCallbacks = animationManager.getKeyframeCallbacks();
         for (j = 0; j < keyframeCallbacks.length; j++) {
             var callbackSplit = keyframeCallbacks[j].split(":");
-            var callbackType = callbackSplit[0];
+            var callbackType = Number(callbackSplit[0]);
             var kfCallbackName = callbackSplit[1];
 
             if (callbackType === 1){ // Document callback
