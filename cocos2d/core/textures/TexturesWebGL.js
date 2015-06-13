@@ -864,7 +864,9 @@ cc._tmp.WebGLTextureCache = function () {
         }
         ext = cc.path.extname(url);
         if (ext === ".png") {
-            tex.handleLoadedTexture();
+            var NO_PRE_ALPHA = "_NoPreAlpha.png";
+            var isNoPreAlpha = url.slice(url.length - NO_PRE_ALPHA.length) === NO_PRE_ALPHA;
+            tex.handleLoadedTexture(!isNoPreAlpha);
         }
         else {
             tex.handleLoadedTexture();
