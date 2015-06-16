@@ -302,9 +302,6 @@
         var shaderTex = cc.shaderCache.programForKey(cc.SHADER_POSITION_TEXTURECOLOR);
         var shaderColor = cc.shaderCache.programForKey(cc.SHADER_POSITION_COLOR);
 
-        if (this._shaderProgram && (this._shaderProgram !== shaderTex && this._shaderProgram !== shaderColor))
-            cc.log("it is!");
-
         if (texture && (!this._shaderProgram || this._shaderProgram === shaderColor)) {
             this._shaderProgram = cc.shaderCache.programForKey(cc.SHADER_POSITION_TEXTURECOLOR);
         }
