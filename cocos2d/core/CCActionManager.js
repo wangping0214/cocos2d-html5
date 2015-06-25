@@ -332,7 +332,8 @@ cc.ActionManager = cc.Class.extend(/** @lends cc.ActionManager# */{
      * @param {Number} dt delta time in seconds
      */
     update:function (dt) {
-        var locTargets = this._arrayTargets , locCurrTarget;
+        // TODO: (ych) Temp fix bug, wait for chu-kong final fix
+        var locTargets = this._arrayTargets.slice() , locCurrTarget;
         for (var elt = 0; elt < locTargets.length; elt++) {
             this._currentTarget = locTargets[elt];
             locCurrTarget = this._currentTarget;
@@ -370,7 +371,7 @@ cc.ActionManager = cc.Class.extend(/** @lends cc.ActionManager# */{
             // so it is safe to ask this here (issue #490)
 
             // only delete currentTarget if no actions were scheduled during the cycle (issue #481)
-            if (this._currentTargetSalvaged && locCurrTarget.actions.length === 0) {
+            if (this._currentTargetSalvaged && locCurrTarget.actions && locCurrTarget.actions.length === 0) {
                 this._deleteHashElement(locCurrTarget);
             }
         }
