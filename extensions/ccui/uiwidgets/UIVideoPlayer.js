@@ -24,6 +24,10 @@
 
 ccui.VideoPlayer = ccui.Widget.extend({
 
+    _played: false,
+    _playing: false,
+    _stopped: true,
+
     ctor: function(path){
         ccui.Widget.prototype.ctor.call(this);
         this._EventList = {};
@@ -50,23 +54,32 @@ ccui.VideoPlayer = ccui.Widget.extend({
      * @returns {String}
      */
     getURL: function() {
-        var video = this._renderCmd._video;
-        if (video) {
-            var source = video.getElementsByTagName("source");
-            if (source && source[0])
-                return source[0].src;
-        }
-
-        return "";
+        return this._renderCmd._url;
     },
 
     /**
      * Play the video
      */
     play: function(){
-        var video = this._renderCmd._video;
-        if(video)
-            video.play();
+        var self = this,
+            video = this._renderCmd._video;
+        if(video){
+            this._played = true;
+            video.pause();
+            if(this._stopped !== false || this._playing !== false || this._played !== true)
+                video.currentTime = 0;
+            if(ccui.VideoPlayer._polyfill.autoplayAfterOperation){
+                setTimeout(function(){
+                    video.play();
+                    self._playing = true;
+                    self._stopped = false;
+                }, 20);
+            }else{
+                video.play();
+                this._playing = true;
+                this._stopped = false;
+            }
+        }
     },
 
     /**
@@ -74,17 +87,19 @@ ccui.VideoPlayer = ccui.Widget.extend({
      */
     pause: function(){
         var video = this._renderCmd._video;
-        if(video)
+        if(video && this._playing === true && this._stopped === false){
             video.pause();
+            this._playing = false;
+        }
     },
 
     /**
      * Resume the video
      */
     resume: function(){
-        var video = this._renderCmd._video;
-        if(video)
-            video.play();
+        if(this._stopped === false && this._playing === false && this._played === true){
+            this.play();
+        }
     },
 
     /**
@@ -92,10 +107,12 @@ ccui.VideoPlayer = ccui.Widget.extend({
      */
     stop: function(){
         var self = this,
-            video = self._renderCmd._video;
+            video = this._renderCmd._video;
         if(video){
             video.pause();
             video.currentTime = 0;
+            this._playing = false;
+            this._stopped = true;
         }
 
         setTimeout(function(){
@@ -110,6 +127,11 @@ ccui.VideoPlayer = ccui.Widget.extend({
         var video = this._renderCmd._video;
         if(video){
             video.currentTime = sec;
+            if(ccui.VideoPlayer._polyfill.autoplayAfterOperation && this.isPlaying()){
+                setTimeout(function(){
+                    video.play();
+                }, 20);
+            }
         }
     },
 
@@ -118,8 +140,12 @@ ccui.VideoPlayer = ccui.Widget.extend({
      * @returns {boolean}
      */
     isPlaying: function(){
-        var video = this._renderCmd._video;
-        return (video && video.paused === false);
+        if(ccui.VideoPlayer._polyfill.autoplayAfterOperation && this._playing){
+            setTimeout(function(){
+                video.play();
+            }, 20);
+        }
+        return this._playing;
     },
 
     /**
@@ -231,29 +257,43 @@ ccui.VideoPlayer.EventType = {
     };
 
     (function(){
+        /**
+         * Some old browser only supports Theora encode video
+         * But native does not support this encode,
+         * so it is best to provide mp4 and webm or ogv file
+         */
         var dom = document.createElement("video");
-        if(dom.canPlayType("video/ogg"))
+        if(dom.canPlayType("video/ogg")){
             video._polyfill.canPlayType.push(".ogg");
+            video._polyfill.canPlayType.push(".ogv");
+        }
         if(dom.canPlayType("video/mp4"))
             video._polyfill.canPlayType.push(".mp4");
+        if(dom.canPlayType("video/webm"))
+            video._polyfill.canPlayType.push(".webm");
     })();
 
     if(cc.sys.OS_IOS === cc.sys.os){
         video._polyfill.devicePixelRatio = true;
         video._polyfill.event = "progress";
     }
+    if(cc.sys.browserType === cc.sys.BROWSER_TYPE_FIREFOX){
+        video._polyfill.autoplayAfterOperation = true;
+    }
+
+    var style = document.createElement("style");
+    style.innerHTML = ".cocosVideo:-moz-full-screen{transform:matrix(1,0,0,1,0,0) !important;}" +
+    ".cocosVideo:full-screen{transform:matrix(1,0,0,1,0,0) !important;}" +
+    ".cocosVideo:-webkit-full-screen{transform:matrix(1,0,0,1,0,0) !important;}";
+    document.head.appendChild(style);
 
 })(ccui.VideoPlayer);
 
 (function(polyfill){
     ccui.VideoPlayer.RenderCmd = function(node){
         cc.Node.CanvasRenderCmd.call(this, node);
-        this._video = document.createElement("video");
-        //this._video.controls = "controls";
-        this._video.preload = "metadata";
-        this._video.style["visibility"] = "hidden";
-        this._loaded = false;
         this._listener = null;
+        this._url = "";
         this.initStyle();
     };
 
@@ -332,11 +372,65 @@ ccui.VideoPlayer.EventType = {
     };
 
     proto.updateURL = function(path){
-        var video = this._video;
-        var source = document.createElement("source");
+        var source, video, hasChild, container, extname;
+        var node = this._node;
+
+        if (this._url == path)
+            return;
+
+        this._url = path;
+
+        if(cc.loader.resPath && !/^http/.test(path))
+            path = cc.path.join(cc.loader.resPath, path);
+
+        hasChild = false;
+        container = cc.container;
+        if('contains' in container) {
+            hasChild = container.contains(this._video);
+        }else {
+            hasChild = container.compareDocumentPosition(this._video) % 16;
+        }
+        if(hasChild)
+            container.removeChild(this._video);
+
+        this._video = document.createElement("video");
+        video = this._video;
+        this.bindEvent();
+        var self = this;
+
+        var cb = function(){
+            if(self._loaded == true)
+                return;
+            self._loaded = true;
+            self.changeSize();
+            self.setDirtyFlag(cc.Node._dirtyFlags.transformDirty);
+            video.removeEventListener(polyfill.event, cb);
+            video.currentTime = 0;
+            video.style["visibility"] = "visible";
+            //IOS does not display video images
+            video.play();
+            if(!node._played){
+                video.pause();
+                video.currentTime = 0;
+            }
+        };
+        video.addEventListener(polyfill.event, cb);
+
+        //video.controls = "controls";
+        video.preload = "metadata";
+        video.style["visibility"] = "hidden";
+        this._loaded = false;
+        node._played = false;
+        node._playing = false;
+        node._stopped = true;
+        this.initStyle();
+        this.visit();
+
+        source = document.createElement("source");
         source.src = path;
         video.appendChild(source);
-        var extname = cc.path.extname(path);
+
+        extname = cc.path.extname(path);
         for(var i=0; i<polyfill.canPlayType.length; i++){
             if(extname !== polyfill.canPlayType[i]){
                 source = document.createElement("source");
@@ -344,31 +438,16 @@ ccui.VideoPlayer.EventType = {
                 video.appendChild(source);
             }
         }
-        var self = this;
-
-        var cb = function(){
-            self._loaded = true;
-            self.setDirtyFlag(cc.Node._dirtyFlags.transformDirty);
-            self.changeSize(0, 0);
-            video.removeEventListener(polyfill.event, cb);
-            video.style["visibility"] = "visible";
-            //IOS does not display video images
-            video.play();
-            video.currentTime = 0;
-            video.pause();
-            video.currentTime = 0;
-            setTimeout(function(){
-                self.bindEvent();
-            }, 0);
-        };
-        video.addEventListener(polyfill.event, cb);
     };
 
     proto.bindEvent = function(){
-        var node = this._node,
+        var self = this,
+            node = this._node,
             video = this._video;
         //binding event
         video.addEventListener("ended", function(){
+            node._renderCmd.updateMatrix(self._worldTransform, cc.view._scaleX, cc.view._scaleY);
+            node._playing = false;
             node._dispatchEvent(ccui.VideoPlayer.EventType.COMPLETED);
         });
         video.addEventListener("play", function(){
@@ -385,14 +464,18 @@ ccui.VideoPlayer.EventType = {
         video.style.position = "absolute";
         video.style.bottom = "0px";
         video.style.left = "0px";
+        video.className = "cocosVideo";
     };
 
     proto.changeSize = function(w, h){
+        var contentSize = this._node._contentSize;
+        w = w || contentSize.width;
+        h = h || contentSize.height;
         var video = this._video;
         if(video){
-            if(w !== undefined && w !== 0)
+            if(w !== 0)
                 video.width = w;
-            if(h !== undefined && h !== 0)
+            if(h !== 0)
                 video.height = h;
         }
     };

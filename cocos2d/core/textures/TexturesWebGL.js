@@ -444,7 +444,7 @@ cc._tmp.WebGLTexture2D = function () {
          * @param {Boolean} [premultiplied=false]
          */
         handleLoadedTexture: function (premultiplied) {
-            premultiplied = (premultiplied === undefined)?false: premultiplied;
+            premultiplied = (premultiplied === undefined) ? false : premultiplied;
             var self = this;
             // Not sure about this ! Some texture need to be updated even after loaded
             if (!cc._rendererInitialized)
@@ -897,8 +897,17 @@ cc._tmp.WebGLTextureCache = function () {
         }
         var tex = locTexs[url] || locTexs[cc.loader._aliases[url]];
         if (tex) {
-            cb && cb.call(target, tex);
-            return tex;
+            if(tex.isLoaded()) {
+                cb && cb.call(target, tex);
+                return tex;
+            }
+            else
+            {
+                tex.addEventListener("load", function(){
+                   cb && cb.call(target, tex);
+                }, target);
+                return tex;
+            }
         }
 
         tex = locTexs[url] = new cc.Texture2D();

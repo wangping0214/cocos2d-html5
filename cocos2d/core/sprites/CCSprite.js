@@ -744,7 +744,7 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
 
         this._renderCmd._checkTextureBoundary(texture, rect, rotated);
 
-        _t.texture = texture;
+        _t.setTexture(texture);
         _t.setTextureRect(rect, rotated);
 
         // by default use "Self Render".
@@ -985,9 +985,10 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         if(texture){
             var textureRect = texture._contentSize;
             var spriteRect = this._rect;
+            var spriteContent = this._contentSize;
             if(
-                textureRect.width === spriteRect.width &&
-                textureRect.height === spriteRect.height
+                textureRect.width === spriteRect.width && spriteContent.width === spriteRect.width &&
+                textureRect.height === spriteRect.height && spriteContent.height === spriteRect.height
             )
                 spriteRect.width = spriteRect.height = 0;
         }

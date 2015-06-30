@@ -313,12 +313,17 @@ cc.ActionManager = cc.Class.extend(/** @lends cc.ActionManager# */{
     },
 
     _deleteHashElement:function (element) {
+        var ret = false;
         if (element) {
-            delete this._hashTargets[element.target.__instanceId];
-            cc.arrayRemoveObject(this._arrayTargets, element);
+            if(this._hashTargets[element.target.__instanceId]){
+                delete this._hashTargets[element.target.__instanceId];
+                cc.arrayRemoveObject(this._arrayTargets, element);
+                ret = true;
+            }
             element.actions = null;
             element.target = null;
         }
+        return ret;
     },
 
     _actionAllocWithHashElement:function (element) {
@@ -332,8 +337,7 @@ cc.ActionManager = cc.Class.extend(/** @lends cc.ActionManager# */{
      * @param {Number} dt delta time in seconds
      */
     update:function (dt) {
-        // TODO: (ych) Temp fix bug, wait for chu-kong final fix
-        var locTargets = this._arrayTargets.slice() , locCurrTarget;
+        var locTargets = this._arrayTargets , locCurrTarget;
         for (var elt = 0; elt < locTargets.length; elt++) {
             this._currentTarget = locTargets[elt];
             locCurrTarget = this._currentTarget;
@@ -371,8 +375,8 @@ cc.ActionManager = cc.Class.extend(/** @lends cc.ActionManager# */{
             // so it is safe to ask this here (issue #490)
 
             // only delete currentTarget if no actions were scheduled during the cycle (issue #481)
-            if (this._currentTargetSalvaged && locCurrTarget.actions && locCurrTarget.actions.length === 0) {
-                this._deleteHashElement(locCurrTarget);
+            if (this._currentTargetSalvaged && locCurrTarget.actions.length === 0) {
+                this._deleteHashElement(locCurrTarget) && elt--;
             }
         }
     }

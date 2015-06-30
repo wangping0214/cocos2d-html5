@@ -84,13 +84,17 @@ ccui.WebView = ccui.Widget.extend({
      * go back
      */
     goBack: function(){
-        if(ccui.WebView._polyfill.closeHistory)
-            return cc.log("The current browser does not support the GoBack");
-        var iframe = this._renderCmd._iframe;
-        if(iframe){
-            var win = iframe.contentWindow;
-            if(win && win.location)
-                win.history.back();
+        try{
+            if(ccui.WebView._polyfill.closeHistory)
+                return cc.log("The current browser does not support the GoBack");
+            var iframe = this._renderCmd._iframe;
+            if(iframe){
+                var win = iframe.contentWindow;
+                if(win && win.location)
+                    win.history.back.call(win);
+            }
+        }catch(err){
+            cc.log(err);
         }
     },
 
@@ -98,13 +102,17 @@ ccui.WebView = ccui.Widget.extend({
      * go forward
      */
     goForward: function(){
-        if(ccui.WebView._polyfill.closeHistory)
-            return cc.log("The current browser does not support the GoForward");
-        var iframe = this._renderCmd._iframe;
-        if(iframe){
-            var win = iframe.contentWindow;
-            if(win && win.location)
-                win.history.forward();
+        try{
+            if(ccui.WebView._polyfill.closeHistory)
+                return cc.log("The current browser does not support the GoForward");
+            var iframe = this._renderCmd._iframe;
+            if(iframe){
+                var win = iframe.contentWindow;
+                if(win && win.location)
+                    win.history.forward.call(win);
+            }
+        }catch(err){
+            cc.log(err);
         }
     },
 
@@ -244,7 +252,7 @@ ccui.WebView.EventType = {
         this._iframe.addEventListener("error", function(){
             node._dispatchEvent(ccui.WebView.EventType.ERROR);
         });
-        this._div.style["background-color"] = "#FFF";
+        this._div.style["background"] = "#FFF";
         this._div.style.height = "200px";
         this._div.style.width = "300px";
         this._div.style.overflow = "scroll";
