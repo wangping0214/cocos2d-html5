@@ -775,8 +775,11 @@ cc.BuilderSoundEffect = cc.ActionInstant.extend({
         this._file = file;
         return true;
     },
+    playSoundFunction:function(file){
+        cc.audioEngine.playEffect(file);
+    },
     update:function(dt) {
-        cc.audioEngine.playEffect(this._file);
+        this.playSoundFunction(this._file)
     }
 });
 cc.BuilderSoundEffect.create = function (file, pitch, pan, gain) {
