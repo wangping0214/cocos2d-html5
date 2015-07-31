@@ -588,11 +588,8 @@ cc.BuilderAnimationManager = cc.Class.extend({
         if (keyframes.length === 0) {
             // Use base value (no animation)
             var baseValue = this._getBaseValue(node, seqProp.getName());
-            if (baseValue != null) {
+            if(baseValue)
                 this._setAnimatedProperty(seqProp.getName(), node, baseValue, tweenDuration);
-            } else {
-                cc.log("cc.BuilderAnimationManager._setFirstFrame(): No baseValue found for property");
-            }                
         } else {
             // Use first keyframe
             var keyframe = keyframes[0];
