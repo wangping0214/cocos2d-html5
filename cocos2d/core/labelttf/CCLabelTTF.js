@@ -689,6 +689,7 @@ cc.LabelTTF = cc.Sprite.extend(/** @lends cc.LabelTTF# */{
      * @param {String} fontName
      */
     setFontName: function (fontName) {
+        fontName = cc.path.basename(fontName, ".ttf") || fontName;
         if (this._fontName && this._fontName !== fontName) {
             this._fontName = fontName;
             this._renderCmd._setFontStyle(this._fontName, this._fontSize, this._fontStyle, this._fontWeight);
