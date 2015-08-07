@@ -116,7 +116,9 @@ cc.LabelTTF = cc.Sprite.extend(/** @lends cc.LabelTTF# */{
             strInfo = label + "";
         else
             strInfo = "";
-
+        if (fontName) {
+            fontName = cc.path.basename(fontName, ".ttf") || fontName;
+        }
         fontSize = fontSize || 16;
         dimensions = dimensions || cc.size(0, 0/*fontSize*/);
         hAlignment = hAlignment || cc.TEXT_ALIGNMENT_LEFT;
