@@ -1025,10 +1025,6 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
             var callbackFunc = controller[callbackName];
             if (!callbackFunc && controller.getCCBCallback)
                 callbackFunc = controller.getCCBCallback(callbackName);
-
-            if (!callbackFunc) 
-                cc.warn("WARNING: Missing callback: " + ccbFilePath + " " + callbackName);
-
             if(callbackNode instanceof cc.ControlButton)
                 callbackNode.addTargetWithActionForControlEvents(controller, callbackFunc, callbackControlEvents);        //register all type of events
             else
@@ -1041,10 +1037,6 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
         for (j = 0; j < documentOutletNames.length; j++) {
             outletName = documentOutletNames[j];
             outletNode = documentOutletNodes[j];
-            
-            if (controller[outletName]) 
-                cc.warn("WARNING: Duplicate  outletName: " + ccbFilePath + " " + outletName);
-
             controller[outletName] = outletNode;
             if (controller.onCCBVar)
                 controller.onCCBVar(outletName, outletNode)
