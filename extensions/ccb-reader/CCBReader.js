@@ -1041,8 +1041,9 @@ cc.BuilderReader.load = function (ccbFilePath, owner, parentSize, ccbRootPath) {
         for (j = 0; j < documentOutletNames.length; j++) {
             outletName = documentOutletNames[j];
             outletNode = documentOutletNodes[j];
-            
-            if (controller[outletName]) 
+
+            var varName = outletName.split("#")[0];
+            if (varName && controller[outletName])
                 cc.warn("WARNING: Duplicate  outletName: " + ccbFilePath + " " + outletName);
 
             controller[outletName] = outletNode;
