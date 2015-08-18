@@ -416,45 +416,52 @@ cc.eventManager = /** @lends cc.eventManager# */{
         if (!listener._isRegistered)
             return false;
 
-        var event = argsObj.event, selTouch = argsObj.selTouch;
-        event._setCurrentTarget(listener._node);
+        try {
+            var event = argsObj.event, selTouch = argsObj.selTouch;
+            event._setCurrentTarget(listener._node);
 
-        var isClaimed = false, removedIdx;
-        var getCode = event.getEventCode(), eventCode = cc.EventTouch.EventCode;
-        if (getCode === eventCode.BEGAN) {
-            if (listener.onTouchBegan) {
-                isClaimed = listener.onTouchBegan(selTouch, event);
-                if (isClaimed && listener._registered)
-                    listener._claimedTouches.push(selTouch);
+            var isClaimed = false, removedIdx;
+            var getCode = event.getEventCode(), eventCode = cc.EventTouch.EventCode;
+            if (getCode === eventCode.BEGAN) {
+                if (listener.onTouchBegan) {
+                    isClaimed = listener.onTouchBegan(selTouch, event);
+                    if (isClaimed && listener._registered)
+                        listener._claimedTouches.push(selTouch);
+                }
+            } else if (listener._claimedTouches.length > 0
+                && ((removedIdx = listener._claimedTouches.indexOf(selTouch)) !== -1)) {
+                isClaimed = true;
+                if (getCode === eventCode.MOVED && listener.onTouchMoved) {
+                    listener.onTouchMoved(selTouch, event);
+                } else if (getCode === eventCode.ENDED) {
+                    if (listener.onTouchEnded)
+                        listener.onTouchEnded(selTouch, event);
+                    if (listener._registered)
+                        listener._claimedTouches.splice(removedIdx, 1);
+                } else if (getCode === eventCode.CANCELLED) {
+                    if (listener.onTouchCancelled)
+                        listener.onTouchCancelled(selTouch, event);
+                    if (listener._registered)
+                        listener._claimedTouches.splice(removedIdx, 1);
+                }
             }
-        } else if (listener._claimedTouches.length > 0
-            && ((removedIdx = listener._claimedTouches.indexOf(selTouch)) !== -1)) {
-            isClaimed = true;
-            if(getCode === eventCode.MOVED && listener.onTouchMoved){
-                listener.onTouchMoved(selTouch, event);
-            } else if(getCode === eventCode.ENDED){
-                if (listener.onTouchEnded)
-                    listener.onTouchEnded(selTouch, event);
-                if (listener._registered)
-                    listener._claimedTouches.splice(removedIdx, 1);
-            } else if(getCode === eventCode.CANCELLED){
-                if (listener.onTouchCancelled)
-                    listener.onTouchCancelled(selTouch, event);
-                if (listener._registered)
-                    listener._claimedTouches.splice(removedIdx, 1);
+
+            // If the event was stopped, return directly.
+            if (event.isStopped()) {
+                cc.eventManager._updateListeners(event);
+                return true;
+            }
+
+            if (isClaimed && listener._registered && listener.swallowTouches) {
+                if (argsObj.needsMutableSet)
+                    argsObj.touches.splice(selTouch, 1);
+                return true;
             }
         }
-
-        // If the event was stopped, return directly.
-        if (event.isStopped()) {
-            cc.eventManager._updateListeners(event);
-            return true;
-        }
-
-        if (isClaimed && listener._registered && listener.swallowTouches) {
-            if (argsObj.needsMutableSet)
-                argsObj.touches.splice(selTouch, 1);
-            return true;
+        catch (e){
+            cc.error("Exception in touch event handler");
+            cc.error(e.stack);
+            return false;
         }
         return false;
     },
