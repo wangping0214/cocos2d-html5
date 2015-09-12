@@ -104,7 +104,7 @@ plugin.extend('facebook', {
         'VALUE_NO': "0"
     },
 
-    _checkLoginStatus: function() {
+    checkLoginStatus: function(callback) {
         var self = this;
         FB.getLoginStatus(function (response) {
             if (response && response.status === 'connected') {
@@ -112,10 +112,12 @@ plugin.extend('facebook', {
                 self._isLoggedIn = true;
                 //save user info
                 self._userInfo = response['authResponse'];
+                callback(true);
             } else {
                 // Reset cached status
                 self._isLoggedIn = false;
                 self._userInfo = {};
+                callback(false);
             }
         });
     },
@@ -132,8 +134,6 @@ plugin.extend('facebook', {
 
         //This configuration will be read from the project.json.
         FB.init(config);
-        this._checkLoginStatus();
-
         plugin.FacebookAgent = this;
     },
     /**
@@ -194,7 +194,6 @@ plugin.extend('facebook', {
      * plugin.FacebookAgent.isLoggedIn(type, msg);
      */
     isLoggedIn: function () {
-        //this._checkLoginStatus();
         return this._isLoggedIn;
     },
 
@@ -264,10 +263,6 @@ plugin.extend('facebook', {
      */
     getAccessToken: function () {
         return this._userInfo ? this._userInfo['accessToken'] : null;
-    },
-
-    canAutoLogin: function () {
-        return this.isLoggedIn()
     },
 
     /**
