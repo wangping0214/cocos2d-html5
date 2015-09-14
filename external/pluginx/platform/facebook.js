@@ -112,12 +112,12 @@ plugin.extend('facebook', {
                 self._isLoggedIn = true;
                 //save user info
                 self._userInfo = response['authResponse'];
-                callback(true);
+                callback(true, response);
             } else {
                 // Reset cached status
                 self._isLoggedIn = false;
                 self._userInfo = {};
-                callback(false);
+                callback(false, response);
             }
         });
     },
