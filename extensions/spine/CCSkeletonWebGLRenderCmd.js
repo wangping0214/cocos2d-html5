@@ -76,12 +76,20 @@
 
             var regionTextureAtlas = node.getTextureAtlas(attachment);
 
-            if (slot.data.blendMode != blendMode) {
+            var forceBlendMode;
+            if (node.highlighted){
+                forceBlendMode = spine.BlendMode.additive;
+            }
+            else{
+                forceBlendMode = spine.BlendMode.normal;
+            }
+            //if (slot.data.blendMode != blendMode) {
                 if (textureAtlas) {
                     textureAtlas.drawQuads();
                     textureAtlas.removeAllQuads();
                 }
-                blendMode = slot.data.blendMode;
+                //blendMode = slot.data.blendMode;
+                blendMode = forceBlendMode;
                 switch (blendMode) {
                 case spine.BlendMode.additive:
                     cc.glBlendFunc(premultiAlpha ? cc.ONE : cc.SRC_ALPHA, cc.ONE);
@@ -95,10 +103,10 @@
                 default:
                     cc.glBlendFunc(locBlendFunc.src, locBlendFunc.dst);
                 }
-            } else if (regionTextureAtlas != textureAtlas && textureAtlas) {
-                textureAtlas.drawQuads();
-                textureAtlas.removeAllQuads();
-            }
+            //} else if (regionTextureAtlas != textureAtlas && textureAtlas) {
+            //    textureAtlas.drawQuads();
+            //    textureAtlas.removeAllQuads();
+            //}
             textureAtlas = regionTextureAtlas;
 
             var quadCount = textureAtlas.getTotalQuads();

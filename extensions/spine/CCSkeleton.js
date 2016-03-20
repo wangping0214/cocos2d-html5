@@ -229,6 +229,30 @@ sp.Skeleton = cc.Node.extend(/** @lends sp.Skeleton# */{
         return cc.rect(position.x + minX, position.y + minY, maxX - minX, maxY - minY);
     },
 
+    getBoundingBoxToWorld: function () {
+        var rect = this.getBoundingBox();
+        var position = this.getPosition();
+        rect.x = rect.x - position.x;
+        rect.y = rect.y - position.y;
+        var trans = this.getNodeToWorldTransform();
+        rect = cc.rectApplyAffineTransform(rect, trans);
+
+        //query child's BoundingBox
+        if (!this._children)
+            return rect;
+
+        var locChildren = this._children;
+        for (var i = 0; i < locChildren.length; i++) {
+            var child = locChildren[i];
+            if (child && child._visible) {
+                var childRect = child._getBoundingBoxToCurrentNode(trans);
+                if (childRect)
+                    rect = cc.rectUnion(rect, childRect);
+            }
+        }
+        return rect;
+    },
+
     _computeRegionAttachmentWorldVertices : function(self, x, y, bone, vertices){
         var offset = self.offset, vertexIndex = sp.VERTEX_INDEX;
         x += bone.worldX;
