@@ -104,8 +104,6 @@
 
         if(node._changePosition)
             node._changePosition();
-        
-        this._dirtyFlag = this._dirtyFlag & cc.Node._dirtyFlags.transformDirty ^ this._dirtyFlag;
 
         var t4x4Mat = t4x4.mat;
         t4x4Mat[0] = trans.a;
@@ -115,11 +113,11 @@
         t4x4Mat[5] = trans.d;
         t4x4Mat[13] = trans.ty;
 
-        // Update Z vertex manually
-        t4x4Mat[14] = node._vertexZ;
-
         //optimize performance for Javascript
         cc.kmMat4Multiply(stackMatrix, parentMatrix, t4x4);
+
+        // Update Z depth
+        t4x4Mat[14] = node._vertexZ;
 
         // XXX: Expensive calls. Camera should be integrated into the cached affine matrix
         if (node._camera !== null && !(node.grid !== null && node.grid.isActive())) {

@@ -5,12 +5,15 @@
              classpath="./compiler/compiler.jar"/>
     <target name="compile">
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="./../lib/cocos2d-js-v3.7-min.js">
-            <!--sourceMapOutputFile="./../lib/cocos2d-js-v3.7-sourcemap" sourceMapFormat="V3" -->
+                debug="false" output="./../lib/cocos2d-js-v3.11-min.js"
+                languageIn="ECMASCRIPT5">
+            <!--sourceMapOutputFile="./../lib/cocos2d-js-v3.11-sourcemap" sourceMapFormat="V3" -->
             <sources dir="./../">
                 <file name="Base64Images.js"/>
                 <file name="CCBoot.js"/>
+                <file name="cocos2d/core/event-manager/CCEventHelper.js"/>
                 <file name="CCDebugger.js"/>
+                <file name="cocos2d/core/utils/CCSimplePool.js"/>
                 <file name="cocos2d/core/utils/BinaryLoader.js"/>
                 <file name="cocos2d/core/platform/CCClass.js"/>
                 <file name="cocos2d/core/platform/CCCommon.js"/>
@@ -39,6 +42,7 @@
                 <file name="cocos2d/core/event-manager/CCEventExtension.js"/>
                 <file name="cocos2d/core/base-nodes/BaseNodesPropertyDefine.js"/>
 
+                <file name="cocos2d/core/renderer/GlobalVertexBuffer.js"/>
                 <file name="cocos2d/core/renderer/RendererCanvas.js"/>
                 <file name="cocos2d/core/renderer/RendererWebGL.js"/>
 
@@ -75,9 +79,11 @@
                 <file name="cocos2d/core/sprites/CCSpriteBatchNodeWebGLRenderCmd.js"/>
                 <file name="cocos2d/core/CCConfiguration.js"/>
                 <file name="cocos2d/core/CCDirector.js"/>
+                <file name="cocos2d/core/CCDirectorCanvas.js"/>
                 <file name="cocos2d/core/CCDirectorWebGL.js"/>
                 <file name="cocos2d/core/CCCamera.js"/>
                 <file name="cocos2d/core/CCScheduler.js"/>
+                <file name="cocos2d/core/utils/CCProfiler.js"/>
                 <file name="cocos2d/core/CCDrawingPrimitivesCanvas.js"/>
                 <file name="cocos2d/core/CCDrawingPrimitivesWebGL.js"/>
                 <file name="cocos2d/core/labelttf/LabelTTFPropertyDefine.js"/>
@@ -171,9 +177,6 @@
                 <file name="extensions/gui/control-extension/CCControlButton.js"/>
                 <file name="extensions/gui/control-extension/CCControlUtils.js"/>
                 <file name="extensions/gui/control-extension/CCInvocation.js"/>
-                <file name="extensions/gui/control-extension/CCScale9Sprite.js"/>
-                <file name="extensions/gui/control-extension/CCScale9SpriteCanvasRenderCmd.js"/>
-                <file name="extensions/gui/control-extension/CCScale9SpriteWebGLRenderCmd.js"/>
                 <file name="extensions/gui/control-extension/CCMenuPassive.js"/>
                 <file name="extensions/gui/control-extension/CCControlSaturationBrightnessPicker.js"/>
                 <file name="extensions/gui/control-extension/CCControlHuePicker.js"/>
@@ -227,9 +230,13 @@
                 <file name="extensions/ccui/uiwidgets/UIWebView.js"/>
                 <file name="extensions/ccui/uiwidgets/UIVideoPlayer.js"/>
                 <file name="extensions/ccui/uiwidgets/UIRichText.js"/>
+                <file name="extensions/ccui/uiwidgets/scroll-widget/UIScrollViewBar.js"/>
                 <file name="extensions/ccui/uiwidgets/scroll-widget/UIScrollView.js"/>
                 <file name="extensions/ccui/uiwidgets/scroll-widget/UIListView.js"/>
+                <file name="extensions/ccui/uiwidgets/scroll-widget/UIPageViewIndicator.js"/>
                 <file name="extensions/ccui/uiwidgets/scroll-widget/UIPageView.js"/>
+                <file name="extensions/ccui/uiwidgets/scroll-widget/UIScrollViewCanvasRenderCmd.js"/>
+                <file name="extensions/ccui/uiwidgets/scroll-widget/UIScrollViewWebGLRenderCmd.js"/>
                 <file name="extensions/cocostudio/components/CCComponent.js"/>
                 <file name="extensions/ccui/layouts/UILayoutComponent.js"/>
                 <file name="extensions/cocostudio/components/CCComponentContainer.js"/>
@@ -300,10 +307,13 @@
 
     <target name="compile_core">
         <jscomp compilationLevel="simple" warning="quiet"
-                debug="false" output="./../lib/cocos2d-js-v3.7-core-min.js">
-            <!--sourceMapOutputFile="./../lib/cocos2d-js-v3.7-core-sourcemap" sourceMapFormat="V3" -->
+                debug="false" output="./../lib/cocos2d-js-v3.11-core-min.js"
+                languageIn="ECMASCRIPT5">
+            <!--sourceMapOutputFile="./../lib/cocos2d-js-v3.11-core-sourcemap" sourceMapFormat="V3" -->
             <sources dir="./../">
+                <file name="cocos2d/core/utils/CCSimplePool.js"/>
                 <file name="CCBoot.js"/>
+                <file name="cocos2d/core/event-manager/CCEventHelper.js"/>
                 <file name="cocos2d/core/platform/CCClass.js"/>
                 <file name="cocos2d/core/cocoa/CCGeometry.js"/>
                 <file name="cocos2d/core/platform/CCSAXParser.js"/>
@@ -329,6 +339,7 @@
                 <file name="cocos2d/core/textures/CCTexture2D.js"/>
                 <file name="cocos2d/core/textures/CCTextureCache.js"/>
 
+                <file name="cocos2d/core/renderer/GlobalVertexBuffer.js"/>
                 <file name="cocos2d/core/renderer/RendererCanvas.js"/>
                 <file name="cocos2d/core/renderer/RendererWebGL.js"/>
 

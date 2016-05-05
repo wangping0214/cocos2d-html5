@@ -746,7 +746,7 @@ ccs.PositionFrame = ccs.Frame.extend({
     },
 
     /**
-     * Gets the postion x
+     * Gets the position x
      * @returns {Number}
      */
     getX: function(){
@@ -1346,7 +1346,7 @@ ccs.EventFrame.create = function(){
  */
 ccs.ZOrderFrame = ccs.Frame.extend({
 
-    _zorder: null,
+    _zorder: 0,
 
     /**
      * the execution of the callback
@@ -1400,17 +1400,30 @@ ccs.ZOrderFrame.create = function(){
 };
 
 ccs.BlendFuncFrame = ccs.Frame.extend({
+    ctor: function () {
+        this._super();
+        this._blendFunc = null;
+    },
 
     onEnter: function(nextFrame, currentFrameIndex){
-        if(this._node)
+        if(this._node && this._blendFunc)
             this._node.setBlendFunc(this._blendFunc);
     },
 
     clone: function(){
         var frame = new ccs.BlendFuncFrame();
         frame.setBlendFunc(this._blendFunc);
-        frame.cloneProperty(this);
+        frame._cloneProperty(this);
         return frame;
+    },
+
+    setBlendFunc: function(blendFunc){
+        if (blendFunc && blendFunc.src && blendFunc.dst)
+            this._blendFunc = blendFunc;
+    },
+
+    getBlendFunc: function(){
+        return this._blendFunc;
     }
 });
 

@@ -22,7 +22,17 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-ccui.VideoPlayer = ccui.Widget.extend({
+/**
+ * @class
+ * @extends ccui.Widget
+ * @brief Displays a video file.
+ *
+ * @note VideoPlayer displays a video file based on DOM element
+ * VideoPlayer will be rendered above all other graphical elements.
+ *
+ * @property {String}   path - The video path
+ */
+ccui.VideoPlayer = ccui.Widget.extend(/** @lends ccui.VideoPlayer# */{
 
     _played: false,
     _playing: false,
@@ -229,8 +239,46 @@ ccui.VideoPlayer = ccui.Widget.extend({
         this._renderCmd.removeDom();
         this.stopAllActions();
         this.unscheduleAllCallbacks();
+    },
+
+    onEnter: function(){
+        ccui.Widget.prototype.onEnter.call(this);
+        var list = ccui.VideoPlayer.elements;
+        if(list.indexOf(this) === -1)
+            list.push(this);
+    },
+
+    onExit: function(){
+        ccui.Widget.prototype.onExit.call(this);
+        var list = ccui.VideoPlayer.elements;
+        var index = list.indexOf(this);
+        if(index !== -1)
+            list.splice(index, 1);
     }
 
+});
+
+// VideoHTMLElement list
+ccui.VideoPlayer.elements = [];
+ccui.VideoPlayer.pauseElements = [];
+
+cc.eventManager.addCustomListener(cc.game.EVENT_HIDE, function () {
+    var list = ccui.VideoPlayer.elements;
+    for(var node, i=0; i<list.length; i++){
+        node = list[i];
+        if(list[i]._playing){
+            node.pause();
+            ccui.VideoPlayer.pauseElements.push(node);
+        }
+    }
+});
+cc.eventManager.addCustomListener(cc.game.EVENT_SHOW, function () {
+    var list = ccui.VideoPlayer.pauseElements;
+    var node = list.pop();
+    while(node){
+        node.play();
+        node = list.pop();
+    }
 });
 
 /**
@@ -319,8 +367,7 @@ ccui.VideoPlayer.EventType = {
             }
             if(hasChild)
                 container.removeChild(this._video);
-            var list = eventManager._listenersMap[cc.game.EVENT_RESIZE].getFixedPriorityListeners();
-            eventManager._removeListenerInVector(list, this._listener);
+            eventManager.removeListener(this._listener);
             this._listener = null;
         }
         this.updateStatus();
@@ -335,6 +382,10 @@ ccui.VideoPlayer.EventType = {
             this.updateMatrix(this._worldTransform, cc.view._scaleX, cc.view._scaleY);
             this._dirtyFlag = this._dirtyFlag & cc.Node._dirtyFlags.transformDirty ^ this._dirtyFlag;
         }
+
+        if (locFlag & flags.orderDirty) {
+            this._dirtyFlag = this._dirtyFlag & flags.orderDirty ^ this._dirtyFlag;
+        }
     };
 
     proto.resize = function(view){
@@ -344,8 +395,7 @@ ccui.VideoPlayer.EventType = {
         if(node._parent && node._visible)
             this.updateMatrix(this._worldTransform, view._scaleX, view._scaleY);
         else{
-            var list = eventManager._listenersMap[cc.game.EVENT_RESIZE].getFixedPriorityListeners();
-            eventManager._removeListenerInVector(list, this._listener);
+            eventManager.removeListener(this._listener);
             this._listener = null;
         }
     };

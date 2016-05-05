@@ -96,13 +96,13 @@ cc.ActionManager = cc.Class.extend(/** @lends cc.ActionManager# */{
      */
     addAction:function (action, target, paused) {
         if(!action)
-            throw "cc.ActionManager.addAction(): action must be non-null";
+            throw new Error("cc.ActionManager.addAction(): action must be non-null");
         if(!target)
-            throw "cc.ActionManager.addAction(): action must be non-null";
+            throw new Error("cc.ActionManager.addAction(): action must be non-null");
 
         //check if the action target already exists
         var element = this._hashTargets[target.__instanceId];
-        //if doesnt exists, create a hashelement and push in mpTargets
+        //if doesn't exists, create a hashelement and push in mpTargets
         if (!element) {
             element = new cc.HashElement();
             element.paused = paused;

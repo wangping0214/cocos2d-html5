@@ -105,7 +105,7 @@
 
     proto.releaseData = function(){};
 
-    proto.initCmd = function(){};
+    proto.resetVertexData = function(){};
 
     proto._updateProgress = function(){
         var node = this._node;
@@ -234,6 +234,10 @@
         if (locFlag & flags.transformDirty) {
             //update the transform
             this.transform(parentCmd);
+        }
+
+        if (locFlag & flags.orderDirty) {
+            this._dirtyFlag = this._dirtyFlag & flags.orderDirty ^ this._dirtyFlag;
         }
     };
 

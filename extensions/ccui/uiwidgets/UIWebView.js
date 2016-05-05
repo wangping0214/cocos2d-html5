@@ -22,7 +22,17 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-ccui.WebView = ccui.Widget.extend({
+/**
+ * @class
+ * @extends ccui.Widget
+ * @brief A View that displays web pages.
+ *
+ * @note WebView displays web pages based on DOM element
+ * WebView will be rendered above all other graphical elements.
+ *
+ * @property {String}   path - The url to be shown in the web view
+ */
+ccui.WebView = ccui.Widget.extend(/** @lends ccui.WebView# */{
 
     ctor: function(path){
         ccui.Widget.prototype.ctor.call(this);
@@ -91,7 +101,11 @@ ccui.WebView = ccui.Widget.extend({
             if(iframe){
                 var win = iframe.contentWindow;
                 if(win && win.location)
-                    win.history.back.call(win);
+                    try {
+                        win.history.back.call(win);
+                    } catch (error) {
+                        win.history.back();
+                    }
             }
         }catch(err){
             cc.log(err);
@@ -109,7 +123,11 @@ ccui.WebView = ccui.Widget.extend({
             if(iframe){
                 var win = iframe.contentWindow;
                 if(win && win.location)
-                    win.history.forward.call(win);
+                    try {
+                        win.history.forward.call(win);
+                    } catch (error) {
+                        win.history.forward();
+                    }
             }
         }catch(err){
             cc.log(err);
@@ -238,6 +256,8 @@ ccui.WebView.EventType = {
             this._div.style["-webkit-overflow"] = "auto";
             this._div.style["-webkit-overflow-scrolling"] = "touch";
             this._iframe = document.createElement("iframe");
+            this._iframe.style["width"] = "100%";
+            this._iframe.style["height"] = "100%";
             this._div.appendChild(this._iframe);
         }else{
             this._div = this._iframe = document.createElement("iframe");
@@ -271,6 +291,10 @@ ccui.WebView.EventType = {
             this.transform(this.getParentRenderCmd(), true);
             this.updateMatrix(this._worldTransform, cc.view._scaleX, cc.view._scaleY);
             this._dirtyFlag = this._dirtyFlag & cc.Node._dirtyFlags.transformDirty ^ this._dirtyFlag;
+        }
+
+        if (locFlag & flags.orderDirty) {
+            this._dirtyFlag = this._dirtyFlag & flags.orderDirty ^ this._dirtyFlag;
         }
     };
 

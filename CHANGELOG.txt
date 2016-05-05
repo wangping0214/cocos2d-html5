@@ -1,5 +1,123 @@
 ChangeLog:
 
+Cocos2d-x v3.8  @ September.6 2015
+    
+    [NEW]           spine: Supported Spine runtime 2.3 (Both native and web engine)
+    [NEW]           Animate: Added Animate's getCurrentFrameIndex function
+    [NEW]           network: Upgrade SocketIO support to v1.x
+
+    [REFINE]        web: Avoid re-bake the content when the parent node's position get changed
+    [REFINE]        web: Added GameNodeObjectData and GameLayerObjectData in JSON parser
+    [REFINE]        web: Updated skeleton animation to the latest version
+    [REFINE]        web: Optimized resources automatic loading in JSON parser
+    [REFINE]        web: Avoid cc.loader resource loading being terminated while encounter errors
+    [REFINE]        web: Throw new Error object instead of error message string
+    [REFINE]        web: Move setDepthTest to renderer
+    [REFINE]        web: Added BlendFuncFrame parser
+    [REFINE]        web: Permitted webp image loading on Chrome
+    [REFINE]        web: Suspended the video player when the browser is minimized
+
+    [FIX]           web: Fixed a bug that VideoPlayer remove event throw error
+    [FIX]           web: Fixed Armature position error in studio JSON parser
+    [FIX]           web: Fixed default clearColor error in director
+    [FIX]           web: Fixed rotation value parsing error in the timeline parser
+    [FIX]           web: Fixed a bug that nested animation may be affected by outer animation
+    [FIX]           web: Made LabelAtlas ignoring invalid characters and updating correctly the content size
+    [FIX]           web: Fixed a bug that VideoPlayer remove event throw error
+    [FIX]           web: Fixed a bug that cc.director.setNotificationNode(null) doesn't take effect
+    [FIX]           web: Fixed texture rect update issue while changing sprite frame
+    [FIX]           web: Fixed effect issue in ActionGrid and NodeGrid
+    [FIX]           web: Fixed logic issue in Menu's _onTouchCancelled function
+    [FIX]           web: Fixed MenuItem crash when normal image is null
+    [FIX]           web: Fixed incomplete fadeout effects
+    [FIX]           web: Fixed issue that return value of cc.screen.fullScreen is not boolean
+    [FIX]           web: Fixed a bug that SkeletonNode is not drawing children
+
+    [TEST]          web: Rewrote testcase for stencil depth mask in RenderTextureTest
+    [TEST]          web: Improved renderTexture stencilDepth test
+    [TEST]          web: Fixed abnormal effects in effectsTest
+    [TEST]          web: Fixed invisiable testcase of effects
+
+Cocos2d-x v3.7.1 @ August.12 2015
+    [HIGHLIGHT]     studio: Added new skeleton animation support and JSON parser for cocos v2.3.2 beta
+
+    [NEW]           Node: Added getNodeToParentTransform with selected ancestor
+    [NEW]           web: Added cc.director.setClearColor and support transparent background
+    [NEW]           web: Added Animate's getCurrentFrameIndex function
+
+    [REFINE]        studio: Optimized JSON parser's performance by removing audio play
+    [REFINE]        studio: Optimized editor related extension data to a component instead of hosting in _userObject
+    [REFINE]        web: Improved color/opacity manipulations in MenuItems
+
+    [FIX]           studio: Fixed ccs.Skin construction issue in JSON parser
+    [FIX]           web: Fixed an issue that loading process won't trigger callback problem
+    [FIX]           web: Fixed a bug where not resetting cc.Audio._ignoreEnded when replaying a sound caused it to stay in a "playing" state
+    [FIX]           web: cc.ScrollView and cc.TableView: added check for parent visibility in onTouchBegan method
+    [FIX]           web: Fixed TurnPageDown effect
+    [FIX]           web: Fixed Cocos Studio parser issue that all elements are missing while the timeline action contains rotation
+
+Cocos2d-x v3.7 Final @ July 20 2015
+    [REFINE]        web: Add compatible Uint16Array definition
+    
+    [FIX]           web: Fixed url check regular expression not supporting localhost issue
+    [FIX]           web: Fixed issue that sprite doesn't update texture rect correctly 
+
+Cocos2d-x v3.7 RC1 @ July 14 2015
+    [REFINE]        Improved localStorage warning when disabled
+
+    [FIX]           Fixed a bug that SingleNode's color isn't set
+    [FIX]           studio: Fixed a bug of JSON parser that texture address is wrong
+    [FIX]           Fixed MenuItems' color/opacity setter issue with child nodes
+    [FIX]           Fixed page view's layout issue for JSON parser
+    [FIX]           Add ttc loader and prevent the pure digital fonts is invalid
+    [FIX]           Fixed Float32Array initialization
+    [FIX]           Fixed a bug that layout background is missing
+    [FIX]           Fixed a bug that ObjectExtensionData miss setCustomProperty and getCustomProperty function
+
+Cocos2d-x v3.7 RC0 @ July 1 2015
+
+* The json loader of Cocos Studio will automatically load dependencies resources
+* SIMD.js optimization for kazmath functions (from Intel)
+* Deleted the redundant variables defined and log informations in ccui.RichText
+* Allowed timeline animations with only one frame
+* Improved property declaration of cc.Texture2D
+
+* Bug fixes:
+    1. Fixed positionType error of particle system in timeline parser
+    2. Fixed setAnimationName issue while the property is undefined in timeline parser
+    3. Fixed `cc.TMXObjectGroup#objectNamed` not returning the result bug
+    4. Fixed TransitionSlideX callback sequence issue
+    5. Fixed issue in music end event
+    6. Fixed bug that LayerColor's color will disappear when update transform after being baked
+    7. Fixed `inverse` function bug of `cc.math.Matrix4`
+    8. Fixed the webaudio's invalid loop attribute bug for chrome 42
+    9. Fixed crash when character not found into BMP font
+    10. Fixed spine's js parser issue by avoid NaN duration
+    11. Fixed LabelTTF multiline detection
+    12. Fixed issue in ccui.Widget#getScale
+    13. Fixed texture is not updated in some cases
+    14. PlayMusic should not use the search path (timeline 2.x)
+    15. Fixed bug of loading path of resources
+    16. Premultiply texture's alpha for png by default to fix Cocos Studio render issues
+    17. Fixed cache update issue of Layout after bake
+    18. Fixed isBaked returning undefined issue
+    19. Made CCProgressTimerCanvasRenderCmd to properly show colorized sprites
+    20. Fixed attributes being reset issue while baked cache canvas' size changed
+    21. Fixed texture does not rotate bug of ccui.LoadingBar
+    22. Fixed color not being set issue in timeline parser
+    23. Fixed custom easing animation bug
+    24. Fixed return empty texture2d bug when adding image with same url multiple times
+    25. Fixed actiontimeline can not step to last frame issue when loop play
+    26. Fixed the prompt can not be used in iOS wechat 6.2
+    27. Fixed restoring of sprite's color issue
+    28. Fixed Uint8Array initialize issue
+    29. Fixed cc.TextFieldTTF Delegate memory leaks
+    30. Fixed sorted result is wrong in cc.eventManager (_sortEventListenersOfSceneGraphPriorityDes)
+    31. Fixed BinaryLoader issue on IE11
+    32. Fixed the sprite's texture bug when frequently change the color
+    33. Fixed an issue that action will result in automatic termination
+    34. Fixed ScrollView initWithViewSize issue
+
 Cocos2d-JS v3.6 @ April 29 2015
 
 * Added GAF web runtime to the web engine, the native support will be merged in future version.
@@ -82,7 +200,7 @@ Cocos2d-JS v3.5 @ April 1 2015
     8. Fixed a bug of Cocos Studio parser that the background color of `ccui.Layout` can't be parsed correctly.
     9. Fixed a bug of `cc.ClippingNode` that it doesn't work when set `inverted` to true in Canvas Mode.
     10. Fixed a bug of `ccs.Armature` that its name was modified to animation name when loading from json files.
-    11. Fixed a bug of `ccui.PageView` that it cancel child touch during movment of page view. 
+    11. Fixed a bug of `ccui.PageView` that it cancel child touch during movement of page view. 
     12. Fixed a bug of `cc.Scheduler` that its parameter `repeat` is invalid in schedule function.
     13. Fixed a bug of `cc.Scheduler` that `unschedule` function may fail.
 
@@ -245,7 +363,7 @@ Cocos2d-JS v3.2 RC0 @ Dec.11, 2014
 	6. Fixed an issue of `cc.ParticleSystem` that it can't change its texture mode and shape type in Canvas mode.
 	7. Fixed an issue of `cc.Layer`'s bake function that its position is incorrect when cc.view's scale isn't 1.
 	8. Fixed an issue of `ccs.ArmatureAnimation`'s `setMovementEventCallFunc` and `setFrameEventCallFunc`.
-	9. Fixed an issue of `console.log` that it isn't a funtion on IE9.
+	9. Fixed an issue of `console.log` that it isn't a function on IE9.
 	10. Fixed an issue of `CSLoader` that it will add duplicate resources to sprite frame cache.
 	11. Fixed an issue of `cc.ProgressTimer` that its setColor is not taking effect.
 	12. Fixed an issue of `cc.loader` that it will throw an error when loading a remote texture.

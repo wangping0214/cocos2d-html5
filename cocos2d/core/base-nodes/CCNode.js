@@ -132,6 +132,7 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
     _localZOrder: 0,                                     ///< Local order (relative to its siblings) used to sort the node
     _globalZOrder: 0,                                    ///< Global order used to sort the node
     _vertexZ: 0.0,
+    _customZ: NaN,
 
     _rotationX: 0,
     _rotationY: 0.0,
@@ -498,7 +499,7 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
      * @param {Number} Var
      */
     setVertexZ: function (Var) {
-        this._vertexZ = Var;
+        this._customZ = this._vertexZ = Var;
     },
 
     /**
@@ -1257,7 +1258,7 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
      * @function
      * @param {cc.Node} child  A child node
      * @param {Number} [localZOrder=]  Z order for drawing priority. Please refer to setZOrder(int)
-     * @param {Number} [tag=]  A integer to identify the node easily. Please refer to setTag(int)
+     * @param {Number|String} [tag=]  An integer or a name to identify the node easily. Please refer to setTag(int) and setName(string)
      */
     addChild: function (child, localZOrder, tag) {
         localZOrder = localZOrder === undefined ? child._localZOrder : localZOrder;
@@ -1457,6 +1458,7 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
         child.arrivalOrder = cc.s_globalOrderOfArrival;
         cc.s_globalOrderOfArrival++;
         child._setLocalZOrder(zOrder);
+        this._renderCmd.setDirtyFlag(cc.Node._dirtyFlags.orderDirty);
     },
 
     /**
@@ -1515,7 +1517,7 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
         }
     },
 
-    //scene managment
+    //scene management
     /**
      * <p>
      *     Event callback that is invoked every time when CCNode enters the 'stage'.                                   <br/>
@@ -2154,8 +2156,21 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
      * @function
      * @return {cc.AffineTransform} The affine transform object
      */
-    getNodeToParentTransform: function(){
-        return this._renderCmd.getNodeToParentTransform();
+    getNodeToParentTransform: function(ancestor){
+        var t = this._renderCmd.getNodeToParentTransform();
+        if(ancestor){
+            var T = {a: t.a, b: t.b, c: t.c, d: t.d, tx: t.tx, ty: t.ty};
+            for(var p = this._parent;  p != null && p != ancestor ; p = p.getParent()){
+                cc.affineTransformConcatIn(T, p.getNodeToParentTransform());
+            }
+            return T;
+        }else{
+            return t;
+        }
+    },
+
+    getNodeToParentAffineTransform: function(ancestor){
+        return this.getNodeToParentTransform(ancestor);
     },
 
     /**
@@ -2435,7 +2450,7 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
     },
 
     _createRenderCmd: function(){
-        if(cc._renderType === cc._RENDER_TYPE_CANVAS)
+        if(cc._renderType === cc.game.RENDER_TYPE_CANVAS)
             return new cc.Node.CanvasRenderCmd(this);
         else
             return new cc.Node.WebGLRenderCmd(this);

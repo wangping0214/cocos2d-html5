@@ -576,7 +576,7 @@ cc.SpriteBatchNode = cc.Node.extend(/** @lends cc.SpriteBatchNode# */{
      * Removes all children from the container and do a cleanup all running actions depending on the cleanup parameter. <br/>
      * (override removeAllChildren of cc.Node)
      * @function
-     * @param {Boolean} cleanup
+     * @param {Boolean} [cleanup=true]
      */
     removeAllChildren: function (cleanup) {
         // Invalidate atlas index. issue #569
@@ -627,7 +627,7 @@ cc.SpriteBatchNode = cc.Node.extend(/** @lends cc.SpriteBatchNode# */{
     },
 
     _createRenderCmd: function(){
-        if(cc._renderType === cc._RENDER_TYPE_CANVAS)
+        if(cc._renderType === cc.game.RENDER_TYPE_CANVAS)
             return new cc.SpriteBatchNode.CanvasRenderCmd(this);
         else
             return new cc.SpriteBatchNode.WebGLRenderCmd(this);
