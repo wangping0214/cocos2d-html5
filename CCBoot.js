@@ -851,6 +851,10 @@ cc.loader = /** @lends cc.loader# */{
                 realUrl += "?_t=" + (new Date() - 0);
         }
         loader.load(realUrl, url, item, function (err, data) {
+            if(typeof(url) === "string" && self._noCacheRex.test(url)) {
+                url = url.split("?")[0];
+            }
+
             if (err) {
                 cc.log(err);
                 self.cache[url] = null;
