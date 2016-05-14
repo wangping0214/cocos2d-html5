@@ -127,7 +127,9 @@ function createVirtualBuffer (buffer, vertexOffset, totalBufferSize, count, data
         // Total vertex array buffer size, including vertex data, in bytes
         totalBufferSize: totalBufferSize,
         // Render command count
-        count: count
+        count: count,
+        // Valid flag, indicate whether the buffer is valid or not
+        valid: true
     };
     return vBuf;
 }
@@ -196,6 +198,18 @@ return {
         this._isCacheToBufferOn = false;
     },
 
+    _removeCache: function (instanceID) {
+        instanceID = instanceID || this._currentID;
+        var cmds = this._cacheToBufferCmds[instanceID];
+        if (cmds) {
+            cmds.length = 0;
+            delete this._cacheToBufferCmds[instanceID];
+        }
+
+        var locIDs = this._cacheInstanceIds;
+        cc.arrayRemoveObject(locIDs, instanceID);
+    },
+
     /**
      * drawing all renderer command to cache canvas' context
      * @param {Number} [renderTextureId]
@@ -203,7 +217,7 @@ return {
     _renderingToBuffer: function (renderTextureId) {
         renderTextureId = renderTextureId || this._currentID;
         var locCmds = this._cacheToBufferCmds[renderTextureId], i, len;
-        var ctx = cc._renderContext, locIDs = this._cacheInstanceIds;
+        var ctx = cc._renderContext;
         // Update all global buffers (only invoke bufferSubData when buffer is dirty)
         for (i = 0, len = _gbuffers.length; i < len; ++i) {
             _gbuffers[i].update();
@@ -213,10 +227,9 @@ return {
         for (i = 0, len = locCmds.length; i < len; i++) {
             locCmds[i].rendering(ctx);
         }
-        locCmds.length = 0;
-        delete this._cacheToBufferCmds[renderTextureId];
-        cc.arrayRemoveObject(locIDs, renderTextureId);
+        this._removeCache(renderTextureId);
 
+        var locIDs = this._cacheInstanceIds;
         if (locIDs.length === 0)
             this._isCacheToBufferOn = false;
         else
@@ -376,7 +389,7 @@ return {
             currBuf = cmd1._vBuffer;
             matched = false;
             // Check to update virtual buffer
-            if (currBuf) {
+            if (currBuf && currBuf.valid) {
                 j = cmd1._currId;
                 // Removed from the command list
                 if (j < 0 || j >= currLen) {
@@ -486,7 +499,7 @@ return {
         _currentBuffer = null;
 
         // Protection, vbuffer invalid or doesn't match the command
-        if (cmd._vertexOffset !== vbuffer.vertexOffset || !vbuffer.buffer) {
+        if (cmd._vertexOffset !== vbuffer.vertexOffset || !vbuffer.valid || !vbuffer.buffer) {
             _bufferError = true;
             return 0;
         }
@@ -675,6 +688,9 @@ return {
         if (ACTIVATE_AUTO_BATCH && (_orderDirtyInFrame || _bufferError)) {
             this._refreshVirtualBuffers();
         }
+
+        // Reset buffer for rendering
+        context.bindBuffer(gl.ARRAY_BUFFER, null);
 
         for (i = 0, len = locCmds.length; i < len; ++i) {
             cmd = locCmds[i];
