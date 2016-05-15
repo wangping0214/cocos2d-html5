@@ -142,6 +142,7 @@ cc.spriteFrameCache = /** @lends cc.spriteFrameCache# */{
     // Adds multiple Sprite Frames from a json object. it uses for local web view app.
     _addSpriteFramesByObject: function(url, jsonObject, texture) {
         cc.assert(url, cc._LogInfos.spriteFrameCache_addSpriteFrames_2);
+
         if(!jsonObject || !jsonObject["frames"])
             return;
 
@@ -218,6 +219,13 @@ cc.spriteFrameCache = /** @lends cc.spriteFrameCache# */{
 
         //Is it a SpriteFrame plist?
         var dict = this._frameConfigCache[url] || cc.loader.getRes(url);
+        if (!dict) {
+            var txt = cc.loader._loadTxtSync(url);
+            if (txt) {
+                dict = cc.plistParser.parse(txt);
+                if (dict) cc.loader.cache[url] = dict;
+            }
+        }
         if(!dict || !dict["frames"])
             return;
 

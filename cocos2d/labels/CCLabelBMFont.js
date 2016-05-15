@@ -233,7 +233,7 @@ cc.LabelBMFont = cc.SpriteBatchNode.extend(/** @lends cc.LabelBMFont# */{
         if (fntFile) {
             var newConf = cc.loader.getRes(fntFile);
             if (!newConf) {
-                cc.log("cc.LabelBMFont.initWithString(): Impossible to create font. Please check file");
+                cc.log("cc.LabelBMFont.initWithString(): Impossible to create font: ("+ fntFile +"). Please check file");
                 return false;
             }
 
@@ -326,7 +326,7 @@ cc.LabelBMFont = cc.SpriteBatchNode.extend(/** @lends cc.LabelBMFont# */{
             var kerningAmount = locKerningDict[(prev << 16) | (key & 0xffff)] || 0;
             var fontDef = locFontDict[key];
             if (!fontDef) {
-                cc.log("cocos2d: LabelBMFont: character not found " + locStr[i]);
+                cc.warn("cocos2d: LabelBMFont: character not found " + locStr + "  " + locStr[i]);
 
                 fontDef = {
                     rect: {
@@ -713,7 +713,17 @@ cc.LabelBMFont = cc.SpriteBatchNode.extend(/** @lends cc.LabelBMFont# */{
             var newConf = cc.loader.getRes(fntFile);
 
             if (!newConf) {
-                cc.log("cc.LabelBMFont.setFntFile() : Impossible to create font. Please check file");
+                var txt = cc.loader._loadTxtSync(fntFile);
+                if (txt) {
+                    newConf = cc._fntLoader.parseFnt(txt, fntFile);
+                    if (newConf)
+                        cc.loader.cache[fntFile] = newConf;
+                }
+            }
+
+
+            if (!newConf) {
+                cc.log("cc.LabelBMFont.setFntFile() : Impossible to create font: ("+ fntFile +"). Please check file");
                 return;
             }
 
@@ -747,6 +757,14 @@ cc.LabelBMFont = cc.SpriteBatchNode.extend(/** @lends cc.LabelBMFont# */{
      */
     getFntFile: function () {
         return this._fntFile;
+    },
+
+    getBMFontFilePath: function () {
+        return this.getFntFile();
+    },
+
+    setBMFontFilePath: function (fntFile) {
+        return this.setFntFile(fntFile)
     },
 
     setTexture: function(texture){

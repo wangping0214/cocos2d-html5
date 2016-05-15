@@ -774,6 +774,13 @@ cc._tmp.WebGLTexture2D = function () {
          */
         removeLoadedEventListener: function (target) {
             this.removeEventListener("load", target);
+        },
+
+        retain: function() {
+
+        },
+        release: function() {
+
         }
     });
 };
@@ -868,7 +875,9 @@ cc._tmp.WebGLTextureCache = function () {
         }
         ext = cc.path.extname(url);
         if (ext === ".png") {
-            tex.handleLoadedTexture(true);
+            var NO_PRE_ALPHA = "_NoPreAlpha.png";
+            var isNoPreAlpha = url.slice(url.length - NO_PRE_ALPHA.length) === NO_PRE_ALPHA;
+            tex.handleLoadedTexture(!isNoPreAlpha);
         }
         else {
             tex.handleLoadedTexture();

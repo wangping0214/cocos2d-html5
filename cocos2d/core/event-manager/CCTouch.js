@@ -170,5 +170,13 @@ cc.Touch = cc.Class.extend(/** @lends cc.Touch# */{
             this._prevPoint = cc.p(x.x, x.y);
         else
             this._prevPoint = cc.p(x || 0, y || 0);
+    },
+
+    _setStartPoint:function (x, y) {
+        if(y === undefined)
+            this._startPoint = cc.p(x.x, x.y);
+        else
+            this._startPoint = cc.p(x || 0, y || 0);
     }
+
 });

@@ -331,8 +331,11 @@ cc.EditBox = cc.ControlButton.extend({
             if (disabled9SpriteBg)
                 this.setBackgroundSpriteForState(disabled9SpriteBg, cc.CONTROL_STATE_DISABLED);
         }
-    },
 
+        this.setInputEnabled = function(b) {
+            tmpEdTxt.disabled = !b;
+        }
+    },
     /**
      * Set the font.
      * @param {String} fontName  The font name.
