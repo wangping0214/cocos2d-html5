@@ -726,7 +726,7 @@ cc.loader = (function () {
                     jsLoadingImg.src = cc._loadingImage;
 
                 var canvasNode = d.getElementById(cc.game.config["id"]);
-                canvasNode.style.backgroundColor = "transparent";
+                canvasNode.style.backgroundColor = "black";
                 canvasNode.parentNode.appendChild(jsLoadingImg);
 
                 var canvasStyle = getComputedStyle ? getComputedStyle(canvasNode) : canvasNode.currentStyle;
@@ -2487,7 +2487,7 @@ cc.game = /** @lends cc.game# */{
                 'stencil': true,
                 'preserveDrawingBuffer': true,
                 'antialias': !cc.sys.isMobile,
-                'alpha': true
+                'alpha': false
             });
         }
         // WebGL context created successfully
