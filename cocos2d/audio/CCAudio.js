@@ -404,7 +404,7 @@ cc.Audio.WebAudio.prototype = {
                 return cb({status:520, errorMessage:ERRSTR}, null);
             }
 
-            if (SWA && this.useWebAudio) {
+            if (SWA) {
                 this.loadBuffer(realUrl, function (error, buffer) {
                     if (error)
                         cc.log(error);
@@ -417,8 +417,7 @@ cc.Audio.WebAudio.prototype = {
                 return;
             }
 
-            //var num = polyfill.ONE_SOURCE ? 1 : typeList.length;
-            var num = 1;
+            var num = polyfill.ONE_SOURCE ? 1 : typeList.length;
 
             // 加载统一使用dom
             var dom = document.createElement('audio');
@@ -430,7 +429,6 @@ cc.Audio.WebAudio.prototype = {
 
             audio.setElement(dom);
 
-            /*
             var timer = setTimeout(function(){
                 if (dom.readyState === 0) {
                     failure();
@@ -438,7 +436,6 @@ cc.Audio.WebAudio.prototype = {
                     success();
                 }
             }, 8000);
-            */
 
             var success = function () {
                 dom.removeEventListener("canplaythrough", success, false);
@@ -446,19 +443,12 @@ cc.Audio.WebAudio.prototype = {
                 dom.removeEventListener("emptied", success, false);
                 if (polyfill.USE_LOADER_EVENT)
                     dom.removeEventListener(polyfill.USE_LOADER_EVENT, success, false);
-                //clearTimeout(timer);
+                clearTimeout(timer);
                 cb(null, audio);
             };
             var failure = function () {
                 cc.log('load audio failure - ' + realUrl);
-                //success();
-                dom.removeEventListener("canplaythrough", success, false);
-                dom.removeEventListener("error", failure, false);
-                dom.removeEventListener("emptied", success, false);
-                if (polyfill.USE_LOADER_EVENT)
-                    dom.removeEventListener(polyfill.USE_LOADER_EVENT, success, false);
-                //clearTimeout(timer);
-                cb('load audio failure - ' + realUrl, null);
+                success();
             };
             dom.addEventListener("canplaythrough", success, false);
             dom.addEventListener("error", failure, false);
@@ -665,14 +655,14 @@ cc.Audio.WebAudio.prototype = {
 
             audio = cc.loader.getRes(url);
 
-            if (loader.useWebAudio && SWA && audio && audio._AUDIO_TYPE === 'AUDIO') {
+            if (audio && SWA && audio._AUDIO_TYPE === 'AUDIO') {
                 cc.loader.release(url);
                 audio = null;
             }
 
             if (audio) {
 
-                if (loader.useWebAudio && SWA && audio._AUDIO_TYPE === 'AUDIO') {
+                if (SWA && audio._AUDIO_TYPE === 'AUDIO') {
                     loader.loadBuffer(url, function (error, buffer) {
                         audio.setBuffer(buffer);
                         audio.setVolume(cc.audioEngine._effectVolume);
@@ -687,17 +677,18 @@ cc.Audio.WebAudio.prototype = {
                     return audio;
                 }
 
-            } else {
-                loader.useWebAudio = true;
-                cc.loader.load(url, function (audio) {
-                    audio = cc.loader.getRes(url);
-                    audio = audio.cloneNode();
-                    audio.setVolume(cc.audioEngine._effectVolume);
-                    audio.play(0, loop || false);
-                    effectList.push(audio);
-                });
-                loader.useWebAudio = false;
             }
+
+            loader.useWebAudio = true;
+            cc.loader.load(url, function (audio) {
+                audio = cc.loader.getRes(url);
+                audio = audio.cloneNode();
+                audio.setVolume(cc.audioEngine._effectVolume);
+                audio.play(0, loop || false);
+                effectList.push(audio);
+            });
+            loader.useWebAudio = false;
+
             return audio;
         },
 
