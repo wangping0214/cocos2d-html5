@@ -318,10 +318,12 @@ ccui.Scale9Sprite = cc.Scale9Sprite = cc.Node.extend(/** @lends ccui.Scale9Sprit
                                 this._offset,
                                 this._originalSize,
                                 capInsets );
+        /*
         this._insetLeft = capInsets.x;
         this._insetTop = capInsets.y;
         this._insetRight = this._originalSize.width - this._insetLeft - capInsets.width;
         this._insetBottom = this._originalSize.height - this._insetTop - capInsets.height;
+        */
         //restore the contentSize
         this.setContentSize(tempWidth, tempHeight);
     },
@@ -980,10 +982,12 @@ ccui.Scale9Sprite = cc.Scale9Sprite = cc.Node.extend(/** @lends ccui.Scale9Sprit
         }
         this.updateWithSprite(sprite, spriteFrame.getRect(),spriteFrame.isRotated(),spriteFrame.getOffset(),spriteFrame.getOriginalSize(),capInsets);
 
+        /*
         this._insetLeft = capInsets.x;
         this._insetTop = capInsets.y;
         this._insetRight = this._originalSize.width - this._insetLeft - capInsets.width;
         this._insetBottom = this._originalSize.height - this._insetTop - capInsets.height;
+        */
     },
 
     //v3.3
