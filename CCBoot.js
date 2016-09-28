@@ -916,8 +916,8 @@ cc.loader = (function () {
                 this.removeEventListener('load', loadCallback, false);
                 this.removeEventListener('error', errorCallback, false);
 
-                if (!_urlRegExp.test(url)) {
-                    cc.loader.cache[url] = img;
+                if (!_urlRegExp.test(url) && typeof(url) === "string") {
+                    cc.loader.cache[url.split("?")[0]] = img;
                 }
 
                 var queue = _queue[url];
