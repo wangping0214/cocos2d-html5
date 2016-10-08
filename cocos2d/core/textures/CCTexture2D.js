@@ -467,6 +467,10 @@ cc.game.addEventListener(cc.game.EVENT_RENDERER_INITED, function () {
                 if(!rect)
                     rect = cc.rect(0, 0, textureImage.width, textureImage.height);
 
+                if (!rect.width || !rect.height) {
+                    return;
+                }
+
                 canvas.width = rect.width;
                 canvas.height = rect.height;
 
