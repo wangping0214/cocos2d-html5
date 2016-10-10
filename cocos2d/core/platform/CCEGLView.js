@@ -145,6 +145,7 @@ cc.EGLView = cc.Class.extend(/** @lends cc.view# */{
     _resolutionPolicy: null,
     _rpExactFit: null,
     _rpShowAll: null,
+    _rpShowAllAndSetTop: null,
     _rpNoBorder: null,
     _rpFixedHeight: null,
     _rpFixedWidth: null,
@@ -191,6 +192,7 @@ cc.EGLView = cc.Class.extend(/** @lends cc.view# */{
         // Setup system default resolution policies
         _t._rpExactFit = new cc.ResolutionPolicy(_strategyer.EQUAL_TO_FRAME, _strategy.EXACT_FIT);
         _t._rpShowAll = new cc.ResolutionPolicy(_strategyer.PROPORTION_TO_FRAME, _strategy.SHOW_ALL);
+        _t._rpShowAllAndSetTop = new cc.ResolutionPolicy(_strategyer.PROPORTION_TO_FRAME_AND_SET_TOP, _strategy.SHOW_ALL);
         _t._rpNoBorder = new cc.ResolutionPolicy(_strategyer.EQUAL_TO_FRAME, _strategy.NO_BORDER);
         _t._rpFixedHeight = new cc.ResolutionPolicy(_strategyer.EQUAL_TO_FRAME, _strategy.FIXED_HEIGHT);
         _t._rpFixedWidth = new cc.ResolutionPolicy(_strategyer.EQUAL_TO_FRAME, _strategy.FIXED_WIDTH);
@@ -577,6 +579,8 @@ cc.EGLView = cc.Class.extend(/** @lends cc.view# */{
                 _t._resolutionPolicy = _t._rpExactFit;
             if(resolutionPolicy === _locPolicy.SHOW_ALL)
                 _t._resolutionPolicy = _t._rpShowAll;
+            if(resolutionPolicy === _locPolicy.SHOW_ALL_AND_SET_TOP)
+                _t._resolutionPolicy = _t._rpShowAllAndSetTop;
             if(resolutionPolicy === _locPolicy.NO_BORDER)
                 _t._resolutionPolicy = _t._rpNoBorder;
             if(resolutionPolicy === _locPolicy.FIXED_HEIGHT)
@@ -1037,6 +1041,35 @@ cc.ContentStrategy = cc.Class.extend(/** @lends cc.ContentStrategy# */{
 
     /**
      * @class
+     * @extends cc.ContainerStrategy
+     */
+    var ProportionalToFrameAndSetTop = cc.ContainerStrategy.extend({
+        apply: function (view, designedResolution) {
+            var frameW = view._frameSize.width, frameH = view._frameSize.height, containerStyle = cc.container.style,
+                designW = designedResolution.width, designH = designedResolution.height,
+                scaleX = frameW / designW, scaleY = frameH / designH,
+                containerW, containerH;
+
+            scaleX < scaleY ? (containerW = frameW, containerH = designH * scaleX) : (containerW = designW * scaleY, containerH = frameH);
+
+            // Adjust container size with integer value
+            var offx = Math.round((frameW - containerW) / 2);
+            var offy = Math.round((frameH - containerH) / 2);
+            containerW = frameW - 2 * offx;
+            containerH = frameH - 2 * offy;
+
+            this._setupContainer(view, containerW, containerH);
+            // Setup container's margin
+            containerStyle.marginLeft = offx + "px";
+            containerStyle.marginRight = offx + "px";
+            containerStyle.marginTop = "0px";
+            containerStyle.marginBottom = offy + "px";
+        }
+    });
+
+
+    /**
+     * @class
      * @extends EqualToFrame
      */
     var EqualToWindow = EqualToFrame.extend({
@@ -1087,6 +1120,9 @@ cc.ContentStrategy = cc.Class.extend(/** @lends cc.ContentStrategy# */{
     cc.ContainerStrategy.PROPORTION_TO_FRAME = new ProportionalToFrame();
 // Alias: Strategy that keeps the original container's size
     cc.ContainerStrategy.ORIGINAL_CONTAINER = new OriginalContainer();
+// Alias: Strategy that scale proportionally the container's size to frame's size, and set the container on the top
+    cc.ContainerStrategy.PROPORTION_TO_FRAME_AND_SET_TOP = new ProportionalToFrameAndSetTop();
+
 
 // Content scale strategys
     var ExactFit = cc.ContentStrategy.extend({
@@ -1308,3 +1344,14 @@ cc.ResolutionPolicy.FIXED_WIDTH = 4;
  * Unknow policy
  */
 cc.ResolutionPolicy.UNKNOWN = 5;
+
+/**
+ * @memberOf cc.ResolutionPolicy#
+ * @name SHOW_ALL_AND_SET_TOP
+ * @constant
+ * @type Number
+ * @static
+ * The entire application is visible in the specified area without distortion while maintaining the original<br/>
+ * aspect ratio of the application. Borders can appear on two sides of the application. Set the div to the top, and others are the same to SHOW_ALL
+ */
+cc.ResolutionPolicy.SHOW_ALL_AND_SET_TOP = 6;
