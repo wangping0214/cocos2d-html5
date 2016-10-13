@@ -75,6 +75,7 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
         this._selectedItem = null;
         this._state = -1;
         this._triggerWhenTouchBegan = false;
+        this._propagateTouchEvents = true;
 
         this._touchListener = cc.EventListener.create({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
@@ -462,6 +463,8 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
             if (!c.isVisible())
                 return false;
         }
+        target.setTouchHandleEnabled(true);
+        target._touchBeganPosition = touch.getLocation();
 
         target._selectedItem = target._itemForTouch(touch);
         if (target._selectedItem) {
@@ -470,6 +473,9 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
             target._selectedItem.setNodeDirty();
             if (target._triggerWhenTouchBegan) {
                 target._selectedItem.activate();
+            }
+            if (target._propagateTouchEvents) {
+                target.propagateTouchEvent(cc.EventTouch.EventCode.BEGAN, event, target, touch);
             }
             return true;
         }
@@ -485,10 +491,14 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
         if (target._selectedItem) {
             target._selectedItem.unselected();
             target._selectedItem.setNodeDirty();
-            if (!target._triggerWhenTouchBegan)
+            if (!target._triggerWhenTouchBegan && target._touchHandleEnabled)
                 target._selectedItem.activate();
         }
+        target.setTouchHandleEnabled(true);
         target._state = cc.MENU_STATE_WAITING;
+        if (target._propagateTouchEvents) {
+            target.propagateTouchEvent(cc.EventTouch.EventCode.ENDED, event, target, touch);
+        }
     },
 
     _onTouchCancelled: function (touch, event) {
@@ -501,7 +511,12 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
             target._selectedItem.unselected();
             target._selectedItem.setNodeDirty();
         }
+        target.setTouchHandleEnabled(true);
         target._state = cc.MENU_STATE_WAITING;
+
+        if (target._propagateTouchEvents) {
+            target.propagateTouchEvent(cc.EventTouch.EventCode.CANCELLED, event, target, touch);
+        }
     },
 
     _onTouchMoved: function (touch, event) {
@@ -521,6 +536,9 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
                 target._selectedItem.selected();
                 target._selectedItem.setNodeDirty();
             }
+        }
+        if (target._propagateTouchEvents) {
+            target.propagateTouchEvent(cc.EventTouch.EventCode.MOVED, event, target, touch);
         }
     },
 

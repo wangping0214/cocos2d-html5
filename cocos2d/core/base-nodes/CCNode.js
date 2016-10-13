@@ -186,6 +186,10 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
 
     _renderCmd:null,
 
+    _propagateTouchEvents: false,
+    _touchBeganPosition: null,
+    _touchHandleEnabled: true,
+
     /**
      * Constructor function, override it to extend the construction behavior, remember to call "this._super()" in the extended "ctor" function.
      * @function
@@ -2559,6 +2563,35 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
         }
 
         return ret;
+    },
+
+    propagateTouchEvent: function(eventType, event, sender, touch){
+        var parent = this.getParent();
+        if (parent){
+            parent.interceptTouchEvent(eventType, event, sender, touch);
+        }
+    },
+
+    /**
+     * Sends the touch event to widget's parent, its subclass will override it, e.g. ccui.ScrollView, ccui.PageView
+     * @param {Number}  eventType
+     * @param {*} event
+     * @param {cc.Node} sender
+     * @param {cc.Touch} touch
+     */
+    interceptTouchEvent: function(eventType, event, sender, touch){
+        var parent = this.getParent();
+        if (parent) {
+            parent.interceptTouchEvent(eventType, event, sender, touch);
+        }
+    },
+
+    getTouchBeganPosition: function() {
+        return this._touchBeganPosition;
+    },
+
+    setTouchHandleEnabled: function(enabled) {
+        this._touchHandleEnabled = enabled;
     }
 });
 
