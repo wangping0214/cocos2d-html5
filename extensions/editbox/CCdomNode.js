@@ -432,6 +432,12 @@ cc.DOM._resetEGLViewDiv = function(){
         var designSizeWidth = designSize.width, designSizeHeight = designSize.height;
         var paddingLeft = parseInt(cc.container.style.paddingLeft),
             paddingBottom = parseInt(cc.container.style.paddingBottom);
+        if (isNaN(paddingLeft)) {
+            paddingLeft = 0;
+        }
+        if (isNaN(paddingBottom)) {
+            paddingBottom = 0;
+        }
         if((designSize.width === 0) && (designSize.height === 0)){
             designSizeWidth = screenSize.width;
             designSizeHeight = screenSize.height;
