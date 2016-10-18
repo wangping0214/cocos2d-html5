@@ -62,8 +62,10 @@ cc.SpriteLoader = cc.NodeLoader.extend({
         if (propertyName === PROPERTY_DISPLAYFRAME) {
             if(ccSpriteFrame)
                 node.setSpriteFrame(ccSpriteFrame);
-            else
-                cc.log("ERROR: SpriteFrame is null");
+            else{
+                // comment by chengxin to avoid performance issue @2016/10/18
+                //cc.log("ERROR: SpriteFrame is null");
+            }
         } else {
             cc.NodeLoader.prototype.onHandlePropTypeSpriteFrame.call(this, node, parent, propertyName, ccSpriteFrame, ccbReader);
         }
