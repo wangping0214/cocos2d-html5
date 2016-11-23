@@ -54,8 +54,8 @@ cc._imgLoader = {
             callback = function(err, img){
                 if(err)
                     return cb(err);
-                cc.loader.cache[url] = img;
-                cc.textureCache.handleLoadedTexture(url);
+                cc.loader.cache[url.split("?")[0]] = img;
+                cc.textureCache.handleLoadedTexture(url.split("?")[0]);
                 cb(null, img);
             };
         }
