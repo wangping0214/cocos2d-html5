@@ -648,10 +648,13 @@ cc.TableView = cc.ScrollView.extend(/** @lends cc.TableView# */{
                 return false;
         }
 
+
         var touchResult = cc.ScrollView.prototype.onTouchBegan.call(this, touch, event);
 
         if(this._touches.length === 1) {
             var index, point;
+
+            this._touchBeganPosition = touch.getLocation();
 
             point = this.getContainer().convertTouchToNodeSpace(touch);
 
@@ -675,7 +678,13 @@ cc.TableView = cc.ScrollView.extend(/** @lends cc.TableView# */{
     onTouchMoved: function(touch, event){
         cc.ScrollView.prototype.onTouchMoved.call(this, touch, event);
 
-        if (this._touchedCell && this.isTouchMoved()) {
+        var loc = touch.getLocation();
+        var len = 10;
+        if(this._touchBeganPosition)
+        {
+            len = cc.pLength(cc.pSub(this._touchBeganPosition, loc));
+        }
+        if (this._touchedCell && this.isTouchMoved() && len > 5) {
             if(this._tableViewDelegate !== null && this._tableViewDelegate.tableCellUnhighlight)
                 this._tableViewDelegate.tableCellUnhighlight(this, this._touchedCell);
             this._touchedCell = null;
