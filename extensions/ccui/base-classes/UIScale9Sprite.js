@@ -150,7 +150,7 @@ ccui.Scale9Sprite = cc.Scale9Sprite = cc.Node.extend(/** @lends ccui.Scale9Sprit
 
         var leftWidth = locBottomLeftContentSize.width;
         var bottomHeight = locBottomLeftContentSize.height;
-        var centerOffset = cc.p(this._offset.x * horizontalScale, this._offset.y*verticalScale);
+        var centerOffset = cc.p(0, 0);//cc.p(this._offset.x * horizontalScale, this._offset.y*verticalScale);
 
         if (cc._renderType === cc.game.RENDER_TYPE_WEBGL) {
             //browser is in canvas mode, need to manually control rounding to prevent overlapping pixels
@@ -612,8 +612,8 @@ ccui.Scale9Sprite = cc.Scale9Sprite = cc.Node.extend(/** @lends ccui.Scale9Sprit
     },
 
     createSlicedSprites: function() {
-        var width = this._originalSize.width,
-            height = this._originalSize.height;
+        var width = this._spriteRect.width,
+            height = this._spriteRect.height;
         var originalRect = this._spriteRect;
         var offsetX = Math.floor(this._offset.x + (width - originalRect.width) / 2.0);
         var offsetY = Math.floor(this._offset.y + (height - originalRect.height) / 2.0);
