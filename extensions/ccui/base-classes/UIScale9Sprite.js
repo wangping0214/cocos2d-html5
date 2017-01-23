@@ -623,6 +623,9 @@ ccui.Scale9Sprite = cc.Scale9Sprite = cc.Node.extend(/** @lends ccui.Scale9Sprit
         var locScale9Image = this._scale9Image;
         var selTexture = locScale9Image.getTexture();
         var rotated = this._spriteFrameRotated;
+        if (cc._renderType === cc.game.RENDER_TYPE_CANVAS && this._spriteFrameRotated) {
+            rotated = false;
+        }
         var rect = cc.rect(originalRect.x, originalRect.y, originalRect.width, originalRect.height);
 
         if(cc._rectEqualToZero(capInsetsInternal))
