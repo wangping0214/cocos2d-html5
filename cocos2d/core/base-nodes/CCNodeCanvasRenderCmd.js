@@ -120,6 +120,11 @@ cc.Node.RenderCmd.prototype = {
     },
 
     transform: function (parentCmd, recursive) {
+        if (cc.isUndefined(parentCmd)){
+            parentCmd = this._oldParentCmd;
+        }
+        this._oldParentCmd = parentCmd;
+
         var node = this._node,
             pt = parentCmd ? parentCmd._worldTransform : null,
             t = this._transform,
