@@ -492,7 +492,8 @@ cc.inputManager = /** @lends cc.inputManager# */{
                 cc.eventManager.dispatchEvent(mouseEvent);
 
                 event.stopPropagation();
-                event.preventDefault();
+                if(!cc.game.config["enableMouseScrollDefault"])
+                    event.preventDefault();
             }, false);
 
             /* firefox fix */
@@ -506,7 +507,8 @@ cc.inputManager = /** @lends cc.inputManager# */{
                 cc.eventManager.dispatchEvent(mouseEvent);
 
                 event.stopPropagation();
-                event.preventDefault();
+                if(!cc.game.config["enableMouseScrollDefault"])
+                    event.preventDefault();
             }, false);
         }
 
