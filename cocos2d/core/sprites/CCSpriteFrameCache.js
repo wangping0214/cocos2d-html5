@@ -142,6 +142,7 @@ cc.spriteFrameCache = /** @lends cc.spriteFrameCache# */{
     // Adds multiple Sprite Frames from a json object. it uses for local web view app.
     _addSpriteFramesByObject: function(url, jsonObject, texture) {
         cc.assert(url, cc._LogInfos.spriteFrameCache_addSpriteFrames_2);
+
         if(!jsonObject || !jsonObject["frames"])
             return;
 
@@ -204,10 +205,10 @@ cc.spriteFrameCache = /** @lends cc.spriteFrameCache# */{
      * <p>
      *   Adds multiple Sprite Frames from a plist or json file.<br/>
      *   A texture will be loaded automatically. The texture name will composed by replacing the .plist or .json suffix with .png<br/>
-     *   If you want to use another texture, you should use the addSpriteFrames:texture method.<br/>
+     *   If you want to use another texture, you should use the addSpriteFrames:texture parameter.<br/>
      * </p>
      * @param {String} url file path
-     * @param {HTMLImageElement|cc.Texture2D|string} texture
+     * @param {HTMLImageElement|cc.Texture2D|string} [texture]
      * @example
      * // add SpriteFrames to SpriteFrameCache With File
      * cc.spriteFrameCache.addSpriteFrames(s_grossiniPlist);
@@ -218,6 +219,13 @@ cc.spriteFrameCache = /** @lends cc.spriteFrameCache# */{
 
         //Is it a SpriteFrame plist?
         var dict = this._frameConfigCache[url] || cc.loader.getRes(url);
+        if (!dict) {
+            var txt = cc.loader._loadTxtSync(url);
+            if (txt) {
+                dict = cc.plistParser.parse(txt);
+                if (dict) cc.loader.cache[url] = dict;
+            }
+        }
         if(!dict || !dict["frames"])
             return;
 

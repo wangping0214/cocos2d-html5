@@ -104,4 +104,5 @@
         node.sprite.visit(this);
         this._dirtyFlag = 0;
     };
+
 })();

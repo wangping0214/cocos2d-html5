@@ -297,13 +297,13 @@ cc.Scale9SpriteLoader = cc.NodeLoader.extend({
     },
     onHandlePropTypeFloat:function(node, parent, propertyName, floatValue,ccbReader){
         if(propertyName === PROPERTY_INSETLEFT) {
-            node.setInsetLeft(floatValue);
+            //node.setInsetLeft(floatValue);
         } else if(propertyName === PROPERTY_INSETTOP) {
-            node.setInsetTop(floatValue);
+            //node.setInsetTop(floatValue);
         } else if(propertyName === PROPERTY_INSETRIGHT) {
-            node.setInsetRight(floatValue);
+            //node.setInsetRight(floatValue);
         } else if(propertyName === PROPERTY_INSETBOTTOM) {
-            node.setInsetBottom(floatValue);
+            //node.setInsetBottom(floatValue);
         } else {
             cc.NodeLoader.prototype.onHandlePropTypeFloat.call(this, node, parent, propertyName, floatValue,ccbReader);
         }

@@ -85,6 +85,16 @@ cc.BuilderAnimationManager = cc.Class.extend({
         this._sequences = seqs;
     },
 
+    getSequenceNames: function() {
+        var seqs = this._sequences;
+        var len = seqs.length;
+        var names = [];
+        for (var i = 0; i < len; i++) {
+            names.push(seqs[i].getName());
+        }
+        return names;
+    },
+
     getAutoPlaySequenceId:function () {
         return this._autoPlaySequenceId;
     },
@@ -402,6 +412,12 @@ cc.BuilderAnimationManager = cc.Class.extend({
     debug:function () {
     },
 
+    getSequenceDuration: function (sequenceName) {
+        var id = this.getSequenceId(sequenceName);
+        if (id != -1)
+            return this._getSequence(id).getDuration();
+        return 0;
+    },
     _getBaseValue:function (node, propName) {
         var props = this._baseValues.objectForKey(node);
         if (props)
@@ -418,6 +434,10 @@ cc.BuilderAnimationManager = cc.Class.extend({
                 return element.getSequenceId();
         }
         return -1;
+    },
+
+    getSequenceId: function (sequenceName) {
+        return this._getSequenceId(sequenceName)
     },
 
     _getSequence:function (sequenceId) {
@@ -568,9 +588,8 @@ cc.BuilderAnimationManager = cc.Class.extend({
         if (keyframes.length === 0) {
             // Use base value (no animation)
             var baseValue = this._getBaseValue(node, seqProp.getName());
-            if(!baseValue)
-                cc.log("cc.BuilderAnimationManager._setFirstFrame(): No baseValue found for property");
-            this._setAnimatedProperty(seqProp.getName(), node, baseValue, tweenDuration);
+            if(baseValue)
+                this._setAnimatedProperty(seqProp.getName(), node, baseValue, tweenDuration);
         } else {
             // Use first keyframe
             var keyframe = keyframes[0];
@@ -606,7 +625,7 @@ cc.BuilderAnimationManager = cc.Class.extend({
         } else if (easingType === CCB_KEYFRAME_EASING_ELASTIC_INOUT) {
             return action.easing(cc.easeElasticInOut(easingOpt));
         } else {
-            cc.log("BuilderReader: Unkown easing type " + easingType);
+            cc.log("BuilderReader: Unknown easing type " + easingType);
             return action;
         }
     },
@@ -754,8 +773,11 @@ cc.BuilderSoundEffect = cc.ActionInstant.extend({
         this._file = file;
         return true;
     },
+    playSoundFunction:function(file){
+        cc.audioEngine.playEffect(file);
+    },
     update:function(dt) {
-        cc.audioEngine.playEffect(this._file);
+        this.playSoundFunction(this._file)
     }
 });
 cc.BuilderSoundEffect.create = function (file, pitch, pan, gain) {

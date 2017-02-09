@@ -430,6 +430,14 @@ cc.DOM._resetEGLViewDiv = function(){
         var screenSize = view.getFrameSize();
 	    var pixelRatio = view.getDevicePixelRatio();
         var designSizeWidth = designSize.width, designSizeHeight = designSize.height;
+        var paddingLeft = parseInt(cc.container.style.paddingLeft),
+            paddingBottom = parseInt(cc.container.style.paddingBottom);
+        if (isNaN(paddingLeft)) {
+            paddingLeft = 0;
+        }
+        if (isNaN(paddingBottom)) {
+            paddingBottom = 0;
+        }
         if((designSize.width === 0) && (designSize.height === 0)){
             designSizeWidth = screenSize.width;
             designSizeHeight = screenSize.height;
@@ -447,6 +455,7 @@ cc.DOM._resetEGLViewDiv = function(){
         div.style.margin = 0;
 
         div.resize(view.getScaleX()/pixelRatio, view.getScaleY()/pixelRatio);
+        div.translates(paddingLeft, -paddingBottom);
         if (view.getResolutionPolicy() === view._rpNoBorder) {
             div.style.left = (view.getFrameSize().width - designSizeWidth)/2 + "px";
             div.style.bottom = (view.getFrameSize().height - designSizeHeight*view.getScaleY()/pixelRatio)/2 + "px";
@@ -507,6 +516,8 @@ cc.DOM._createEGLViewDiv = function(p){
     var screenSize = view.getFrameSize();
     var pixelRatio = view.getDevicePixelRatio();
     var designSizeWidth = designSize.width, designSizeHeight = designSize.height;
+    var paddingLeft = parseInt(cc.container.style.paddingLeft),
+        paddingBottom = parseInt(cc.container.style.paddingBottom);
     if ((designSize.width === 0) && (designSize.height === 0)) {
         designSizeWidth = screenSize.width;
         designSizeHeight = screenSize.height;
@@ -524,6 +535,7 @@ cc.DOM._createEGLViewDiv = function(p){
     div.style.margin = 0;
 
     div.resize(view.getScaleX()/pixelRatio, view.getScaleY()/pixelRatio);
+    div.translates(paddingLeft, -paddingBottom);
     if (view.getResolutionPolicy() === view._rpNoBorder) {
         div.style.left = (screenSize.width - designSizeWidth)/2 + "px";
         div.style.bottom = (screenSize.height - designSizeHeight*view.getScaleY()/pixelRatio)/2 + "px";
@@ -596,7 +608,7 @@ cc.DOM.forSprite = function (x) {
  * @param x
  */
 cc.DOM.placeHolder = function (x) {
-    //creating a placeholder dom to simulate other ccNode in the hierachy
+    //creating a placeholder dom to simulate other ccNode in the hierarchy
     x.dom = cc.$new('div');
     x.placeholder = true;
     x.dom.style.position = 'absolute';

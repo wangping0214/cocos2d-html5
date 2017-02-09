@@ -208,7 +208,7 @@ cc.ActionInterval = cc.FiniteTimeAction.extend(/** @lends cc.ActionInterval# */{
      * returns a reversed action. <br />
      * Will be overwrite.
      *
-     * @return {null}
+     * @return {?cc.Action}
      */
     reverse:function () {
         cc.log("cc.IntervalAction: reverse not implemented.");
@@ -1121,6 +1121,7 @@ cc.RotateTo = cc.ActionInterval.extend(/** @lends cc.RotateTo# */{
     /**
      * RotateTo reverse not implemented.
      * Will be overridden.
+     * @returns {cc.Action}
      */
     reverse:function () {
         cc.log("cc.RotateTo.reverse(): it should be overridden in subclass.");
@@ -3565,3 +3566,53 @@ cc.targetedAction = function (target, action) {
  * @return {cc.TargetedAction}
  */
 cc.TargetedAction.create = cc.targetedAction;
+
+cc.UpdateFuncAction = cc.ActionInterval.extend({
+    /**
+     * Constructor function, override it to extend the construction behavior, remember to call "this._super()" in the extended "ctor" function.
+     * @param {Number} duration duration in seconds
+     * @param {Function} func
+     */
+    ctor:function (duration, func) {
+        cc.ActionInterval.prototype.ctor.call(this);
+        this.initWithDuration(duration);
+        this.func = func;
+    },
+
+    update: function(dt) {
+        this.func(dt);
+    }
+});
+
+cc.updateFuncAction = function(duration, func) {
+    return new cc.UpdateFuncAction(duration, func)
+};
+
+cc.UpdateFuncAction.create = cc.updateFuncAction;
+
+/**
+ * Create new action.
+ * Moving to the specified coordinates.
+ * @function
+ * @param {Number} duration duration in seconds
+ * @param {cc.Point} position
+ * @param {Number} y
+ * @return {cc.MoveBy}
+ * @example
+ * // example
+ * var actionBy = cc.moveTo(2, cc.p(80, 80));
+ */
+cc.moveTo = function (duration, position, y) {
+    return new cc.MoveTo(duration, position, y);
+};
+/**
+ * Please use cc.moveTo instead.
+ * Moving to the specified coordinates.
+ * @static
+ * @deprecated since v3.0 <br /> Please use cc.moveTo instead.
+ * @param {Number} duration duration in seconds
+ * @param {cc.Point} position
+ * @param {Number} y
+ * @return {cc.MoveBy}
+ */
+cc.MoveTo.create = cc.moveTo;

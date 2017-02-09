@@ -392,6 +392,38 @@ cc.ScrollView = cc.Layer.extend(/** @lends cc.ScrollView# */{
         this._delegate = delegate;
     },
 
+    /**
+     * Intercept touch event, handle its child's touch event.
+     * @override
+     * @param {number} event event type
+     * @param {*} event
+     * @param {cc.Node} sender
+     * @param {cc.Touch} touch
+     */
+    interceptTouchEvent: function (eventType, event, sender, touch) {
+        if(!this.isTouchEnabled()) return;
+        var touchPoint = touch.getLocation();
+        switch (eventType) {
+            case cc.EventTouch.EventCode.BEGAN:
+                this._touchBeganPosition = touchPoint;
+                this.onTouchBegan(touch, event);
+                break;
+            case cc.EventTouch.EventCode.MOVED:
+                var offset = cc.pLength(cc.pSub(sender.getTouchBeganPosition(), touchPoint));
+                if (offset > 5) {
+                    sender.setTouchHandleEnabled(false);
+                }
+                this.onTouchMoved(touch, event);
+                break;
+            case cc.EventTouch.EventCode.ENDED:
+                this.onTouchEnded(touch, event);
+                break;
+            case cc.EventTouch.EventCode.CANCELLED:
+                this.onTouchCancelled(touch, event);
+                break;
+        }
+    },
+
     /** override functions */
     // optional
     onTouchBegan:function (touch, event) {
@@ -579,14 +611,6 @@ cc.ScrollView = cc.Layer.extend(/** @lends cc.ScrollView# */{
 
     setClippingToBounds:function (clippingToBounds) {
         this._clippingToBounds = clippingToBounds;
-    },
-
-    visit:function (parentCmd) {
-        // quick return if not visible
-        if (!this.isVisible())
-            return;
-
-        this._renderCmd.visit(parentCmd);
     },
 
     addChild:function (child, zOrder, tag) {
