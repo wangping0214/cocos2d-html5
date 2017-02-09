@@ -145,7 +145,8 @@ cc.glBlendFuncForParticle = function(sfactor, dfactor) {
         } else {
             ctx.enable(ctx.BLEND);
             //TODO need fix for WebGL
-            ctx.blendFuncSeparate(ctx.SRC_ALPHA, dfactor, sfactor, dfactor);
+            //ctx.blendFuncSeparate(ctx.SRC_ALPHA, dfactor, sfactor, dfactor);
+            cc._renderContext.blendFunc(sfactor,dfactor);
         }
     }
 };
