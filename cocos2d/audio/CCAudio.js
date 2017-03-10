@@ -121,6 +121,26 @@ cc.Audio = cc.Class.extend({
         }
     },
 
+    playWithWebAudioLoopFixed: function (offset, loop) {
+        if (!this._element) return;
+        this._element.loop = loop;
+        if(this._AUDIO_TYPE === 'WEBAUDIO') {
+            this._element.playWithLoopFixed(offset);
+        } else {
+            this._element.play();
+        }
+        if (this._AUDIO_TYPE === 'AUDIO' && this._element.paused) {
+            this.stop();
+            cc.Audio.touchPlayList.push({ loop: loop, offset: offset, audio: this._element });
+        }
+
+        if (cc.Audio.bindTouch === false) {
+            cc.Audio.bindTouch = true;
+            // Listen to the touchstart body event and play the audio when necessary.
+            cc.game.canvas.addEventListener('touchstart', cc.Audio.touchStart);
+        }
+    },
+
     getPlaying: function () {
         if (!this._element) return true;
         return !this._element.paused;
@@ -257,6 +277,65 @@ cc.Audio.WebAudio.prototype = {
             else
                 audio["noteOn"](0, offset, duration - offset);
         } else {
+            if (audio.start)
+                audio.start(0);
+            else if (audio["notoGrainOn"])
+                audio["noteGrainOn"](0);
+            else
+                audio["noteOn"](0);
+        }
+
+        this._currentSource = audio;
+
+        // If the current audio context time stamp is 0
+        // There may be a need to touch events before you can actually start playing audio
+        // So here to add a timer to determine whether the real start playing audio, if not, then the incoming touchPlay queue
+        if (this.context.currentTime === 0) {
+            var self = this;
+            clearTimeout(this._currextTimer);
+            this._currextTimer = setTimeout(function () {
+                if (self.context.currentTime === 0) {
+                    cc.Audio.touchPlayList.push({
+                        offset: offset,
+                        audio: self
+                    });
+                }
+            }, 10);
+        }
+    },
+
+    playWithLoopFixed: function (offset) {
+
+        // If repeat play, you need to stop before an audio
+        if (this._currentSource && !this.paused) {
+            this._currentSource.stop(0);
+            this.playedLength = 0;
+        }
+
+        var audio = this.context["createBufferSource"]();
+        audio.buffer = this.buffer;
+        audio["connect"](this._volume);
+        audio.loop = this._loop;
+
+        this._startTime = this.context.currentTime;
+        offset = offset || this.playedLength;
+
+        var duration = this.buffer.duration;
+        if (!this._loop) {
+            if (audio.start)
+                audio.start(0, offset, duration - offset);
+            else if (audio["notoGrainOn"])
+                audio["noteGrainOn"](0, offset, duration - offset);
+            else
+                audio["noteOn"](0, offset, duration - offset);
+        } else {
+            /**
+             * it is said that compressed audio file with frames, usually have the last frame not full filled, so it will produce a small gap when play next loop
+             * cut the last frames will solute the problem
+             * in a standard mp3, with 44100hz sample rate, a frame have about 23ms, so we use 50ms to skip the last frame
+             */
+            audio.loopStart = 0.050;
+            audio.loopEnd = duration - 0.050;
             if (audio.start)
                 audio.start(0);
             else if (audio["notoGrainOn"])
@@ -685,6 +764,90 @@ cc.Audio.WebAudio.prototype = {
                 audio = audio.cloneNode();
                 audio.setVolume(cc.audioEngine._effectVolume);
                 audio.play(0, loop || false);
+                effectList.push(audio);
+            });
+            loader.useWebAudio = false;
+
+            return audio;
+        },
+
+        /**
+         * Play sound effect.
+         * @param {String} url The path of the sound effect with filename extension.
+         * @param {Boolean} loop Whether to loop the effect playing, default value is false
+         * @return {Number|null} the audio id
+         * @example
+         * //example
+         * var soundId = cc.audioEngine.playEffect(path);
+         */
+        playEffectWithWebAudioLoopFixed: function(url, loop){
+
+            if (SWB && this._currMusic && this._currMusic.getPlaying()) {
+                cc.log('Browser is only allowed to play one audio');
+                return null;
+            }
+
+            var effectList = this._audioPool[url];
+            if (!effectList) {
+                effectList = this._audioPool[url] = [];
+            }
+
+            var i;
+
+            for (i = 0; i < effectList.length; i++) {
+                if (!effectList[i].getPlaying()) {
+                    break;
+                }
+            }
+
+            if (!SWA && i > this._maxAudioInstance) {
+                var first = effectList.shift();
+                first.stop();
+                effectList.push(first);
+                i = effectList.length - 1;
+                // cc.log("Error: %s greater than %d", url, this._maxAudioInstance);
+            }
+
+            var audio;
+            if (effectList[i]) {
+                audio = effectList[i];
+                audio.setVolume(this._effectVolume);
+                audio.playWithWebAudioLoopFixed(0, loop || false);
+                return audio;
+            }
+
+            audio = cc.loader.getRes(url);
+
+            if (audio && SWA && audio._AUDIO_TYPE === 'AUDIO') {
+                cc.loader.release(url);
+                audio = null;
+            }
+
+            if (audio) {
+
+                if (SWA && audio._AUDIO_TYPE === 'AUDIO') {
+                    loader.loadBuffer(url, function (error, buffer) {
+                        audio.setBuffer(buffer);
+                        audio.setVolume(cc.audioEngine._effectVolume);
+                        if (!audio.getPlaying())
+                            audio.playWithWebAudioLoopFixed(0, loop || false);
+                    });
+                } else {
+                    audio = audio.cloneNode();
+                    audio.setVolume(this._effectVolume);
+                    audio.playWithWebAudioLoopFixed(0, loop || false);
+                    effectList.push(audio);
+                    return audio;
+                }
+
+            }
+
+            loader.useWebAudio = true;
+            cc.loader.load(url, function (audio) {
+                audio = cc.loader.getRes(url);
+                audio = audio.cloneNode();
+                audio.setVolume(cc.audioEngine._effectVolume);
+                audio.playWithWebAudioLoopFixed(0, loop || false);
                 effectList.push(audio);
             });
             loader.useWebAudio = false;
