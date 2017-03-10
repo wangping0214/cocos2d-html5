@@ -210,6 +210,16 @@ cc.Audio = cc.Class.extend({
         }
     },
 
+    playWithWebAudioLoopFixed: function(offset, loop){
+        this._playing = true;
+        this.loop = loop === undefined ? this.loop : loop;
+        if(this._AUDIO_TYPE === "AUDIO"){
+            this._playOfAudio(offset);
+        }else{
+            this._playOfWebAudioWithLoopFixed(offset);
+        }
+    },
+
     getPlaying: function(){
         if(!this._playing){
             return false;
@@ -252,6 +262,84 @@ cc.Audio = cc.Class.extend({
         this._startTime = this._context.currentTime;
         this._currentTime = offset || 0;
         this._ignoreEnded = false;
+
+        /*
+         * Safari on iOS 6 only supports noteOn(), noteGrainOn(), and noteOff() now.(iOS 6.1.3)
+         * The latest version of chrome has supported start() and stop()
+         * start() & stop() are specified in the latest specification (written on 04/26/2013)
+         *      Reference: https://dvcs.w3.org/hg/audio/raw-file/tip/webaudio/specification.html
+         * noteOn(), noteGrainOn(), and noteOff() are specified in Draft 13 version (03/13/2012)
+         *      Reference: http://www.w3.org/2011/audio/drafts/2WD/Overview.html
+         */
+        if(audio.start){
+            audio.start(0, offset || 0);
+        }else if(audio["noteGrainOn"]){
+            var duration = audio.buffer.duration;
+            if (this.loop) {
+                /*
+                 * On Safari on iOS 6, if loop == true, the passed in @param duration will be the duration from now on.
+                 * In other words, the sound will keep playing the rest of the music all the time.
+                 * On latest chrome desktop version, the passed in duration will only be the duration in this cycle.
+                 * Now that latest chrome would have start() method, it is prepared for iOS here.
+                 */
+                audio["noteGrainOn"](0, offset, duration);
+            } else {
+                audio["noteGrainOn"](0, offset, duration - offset);
+            }
+        }else {
+            // if only noteOn() is supported, resuming sound will NOT work
+            audio["noteOn"](0);
+        }
+        this._currentSource = audio;
+        var self = this;
+        audio["onended"] = function(){
+            if(self._manualLoop && self._playing && self.loop){
+                self.stop();
+                self.play();
+                return;
+            }
+            if(self._ignoreEnded){
+                self._ignoreEnded = false;
+            }else{
+                if(!self._pause)
+                    self.stop();
+                else
+                    self._playing = false;
+            }
+        };
+    },
+
+    _playOfWebAudioWithLoopFixed: function(offset){
+        var cs = this._currentSource;
+        if(!this._buffer){
+            return;
+        }
+        if(!this._pause && cs){
+            if(this._context.currentTime === 0 || this._currentTime + this._context.currentTime - this._startTime > cs.buffer.duration)
+                this._stopOfWebAudio();
+            else
+                return;
+        }
+        var audio = this._context["createBufferSource"]();
+        audio.buffer = this._buffer;
+        audio["connect"](this._volume);
+        if(this._manualLoop)
+            audio.loop = false;
+        else
+            audio.loop = this.loop;
+        this._startTime = this._context.currentTime;
+        this._currentTime = offset || 0;
+        this._ignoreEnded = false;
+
+        if(this.loop) {
+            /**
+             * it is said that compressed audio file with frames, usually have the last frame not full filled, so it will produce a small gap when play next loop
+             * cut the last frames will solute the problem
+             * in a standard mp3, with 44100hz sample rate, a frame have about 23ms, so we use 50ms to skip the last frame
+             */
+            audio.loopStart = 0.050;
+            audio.loopEnd = audio.buffer.duration - 0.050;
+        }
 
         /*
          * Safari on iOS 6 only supports noteOn(), noteGrainOn(), and noteOff() now.(iOS 6.1.3)
@@ -823,6 +911,58 @@ cc.Audio = cc.Class.extend({
                 audio.setVolume(this._effectVolume);
                 audio.loop = loop || false;
                 audio.play();
+                effectList.push(audio);
+            }
+
+            return audio;
+        },
+
+        /**
+         * Play sound effect.
+         * @param {String} url The path of the sound effect with filename extension.
+         * @param {Boolean} loop Whether to loop the effect playing, default value is false
+         * @return {Number|null} the audio id
+         * @example
+         * //example
+         * var soundId = cc.audioEngine.playEffect(path);
+         */
+        playEffectWithWebAudioLoopFix: function(url, loop){
+            //If the browser just support playing single audio
+            if(!SWB){
+                //Must be forced to shut down
+                //Because playing MULTI_CHANNEL audio will be stuck in chrome 28 (android)
+                return null;
+            }
+
+            var effectList = this._audioPool[url];
+            if(!effectList){
+                effectList = this._audioPool[url] = [];
+            }
+
+            var i;
+
+            for(i=0; i<effectList.length; i++){
+                if(!effectList[i].getPlaying()){
+                    break;
+                }
+            }
+
+            if(effectList[i]){
+                audio = effectList[i];
+                audio.setVolume(this._effectVolume);
+                audio.playWithWebAudioLoopFixed(0, loop);
+            }else if(!SWA && i > this._maxAudioInstance){
+                cc.log("Error: %s greater than %d", url, this._maxAudioInstance);
+            }else{
+                var audio = loader.cache[url];
+                if(!audio){
+                    cc.loader.load(url);
+                    audio = loader.cache[url];
+                }
+                audio = audio.cloneNode();
+                audio.setVolume(this._effectVolume);
+                audio.loop = loop || false;
+                audio.playWithWebAudioLoopFixed();
                 effectList.push(audio);
             }
 
