@@ -334,7 +334,7 @@ cc.RenderTexture = cc.Node.extend(/** @lends cc.RenderTexture# */{
     },
 
     /**
-     * When enabled, it will render its children into the texture automatically. Disabled by default for compatiblity reasons. <br/>
+     * When enabled, it will render its children into the texture automatically. Disabled by default for compatibility reasons. <br/>
      * Will be enabled in the future.
      * @return {Boolean}
      */
@@ -343,7 +343,7 @@ cc.RenderTexture = cc.Node.extend(/** @lends cc.RenderTexture# */{
     },
 
     /**
-     * When enabled, it will render its children into the texture automatically. Disabled by default for compatiblity reasons. <br/>
+     * When enabled, it will render its children into the texture automatically. Disabled by default for compatibility reasons. <br/>
      * Will be enabled in the future.
      * @return {Boolean}
      */
@@ -382,7 +382,15 @@ cc.RenderTexture = cc.Node.extend(/** @lends cc.RenderTexture# */{
      * Listen "come to foreground" message and restore the frame buffer object. It only has effect on Android.
      * @param {cc.Class} obj
      */
-    listenToForeground:function (obj) { }
+    listenToForeground:function (obj) { },
+
+    // Added by yaochunhui
+    readPixels: function() {
+        if (cc.isFunction(this._renderCmd.readPixels))
+            return this._renderCmd.readPixels();
+        else
+            return [255, 255, 255, 255]
+    }
 });
 
 var _p = cc.RenderTexture.prototype;

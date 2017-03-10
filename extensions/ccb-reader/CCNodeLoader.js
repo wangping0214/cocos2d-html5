@@ -498,6 +498,9 @@ cc.NodeLoader = cc.Class.extend({
             if(ccbReader.getAnimatedProperties().indexOf(propertyName) > -1){
                 ccbReader.getAnimationManager().setBaseValue(spriteFrame,node,propertyName);
             }
+            if (!spriteFrame) {
+                cc.warn("WARNING: " + spriteSheet + " " + spriteFile + " not found.");
+            }
         }
 
         return spriteFrame;

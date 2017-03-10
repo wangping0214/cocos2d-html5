@@ -178,7 +178,8 @@ cc.Timer = cc.Class.extend(/** @lends cc.Timer# */{
                     }
                 } else {
                     if (this._elapsed >= this._interval) {
-                        this.trigger();
+                        if (this._timesExecuted <= this._repeat)
+                            this.trigger();
 
                         this._elapsed = 0;
                         this._timesExecuted += 1;
