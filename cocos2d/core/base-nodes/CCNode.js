@@ -1498,6 +1498,7 @@ cc.Node = cc.Class.extend(/** @lends cc.Node# */{
 
             //don't need to check children recursively, that's done in visit of each child
             this._reorderChildDirty = false;
+            cc.eventManager._setDirtyForNode(this);
         }
     },
 
