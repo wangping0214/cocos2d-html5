@@ -14,8 +14,6 @@ cc.profiler = (function () {
     var _currLevel = 3, _analyseCount = 0, _totalFPS = 0;
     var _lifetimeTotalFPS = 0;
     var _lifetimeTotalCount = 0;
-    var _lowPerformanceFPS = 40;
-    var _lowPerformanceCount = 0;
 
     _fps.id = 'fps';
     _fps.style.position = 'absolute';
@@ -43,9 +41,6 @@ cc.profiler = (function () {
         _totalFPS += fps;
         _lifetimeTotalCount++;
         _lifetimeTotalFPS += fps;
-        if (fps < _lowPerformanceFPS){
-            _lowPerformanceCount++;
-        }
 
         for (; i >= 0; i--) {
             if (fps >= LEVELS[i]) {
@@ -58,7 +53,7 @@ cc.profiler = (function () {
             average = _totalFPS / _levelDetCycle;
             profiler.onFrameRateAvg && profiler.onFrameRateAvg(average.toFixed(2));
             var lifetimeAvg = _lifetimeTotalFPS / _lifetimeTotalCount;
-            profiler.onFrameRateLifeTimeAvg && profiler.onFrameRateLifeTimeAvg(lifetimeAvg.toFixed(2), _lowPerformanceCount);
+            profiler.onFrameRateLifeTimeAvg && profiler.onFrameRateLifeTimeAvg(lifetimeAvg.toFixed(2));
             if (_lifetimeTotalFPS > 99999999){
                 _lifetimeTotalFPS = 0;
                 _lifetimeTotalCount = 0;
