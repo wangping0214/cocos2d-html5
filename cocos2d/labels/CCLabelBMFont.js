@@ -404,6 +404,14 @@ cc.LabelBMFont = cc.SpriteBatchNode.extend(/** @lends cc.LabelBMFont# */{
     },
 
     /**
+     * Gets the text of this label with Auto-Lines
+     * @return {String}
+     */
+    getStringUpdated: function () {
+        return this._string || this._initialString;
+    },
+
+    /**
      * Set the text
      * @param {String} newString
      * @param {Boolean|null} needUpdateLabel
