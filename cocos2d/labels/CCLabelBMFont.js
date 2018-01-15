@@ -548,6 +548,8 @@ cc.LabelBMFont = cc.SpriteBatchNode.extend(/** @lends cc.LabelBMFont# */{
     updateLabel: function () {
         var self = this;
         self.string = self._initialString;
+
+
         var i, j, characterSprite;
         // process string
         // Step 1: Make multiline
@@ -579,9 +581,9 @@ cc.LabelBMFont = cc.SpriteBatchNode.extend(/** @lends cc.LabelBMFont# */{
             var lineNumber = 0;
             var strlen = self._string.length;
             var last_line = [];
-
-            for (var ctr = 0; ctr < strlen; ctr++) {
-                if (self._string[ctr].charCodeAt(0) === 10 || self._string[ctr].charCodeAt(0) === 0) {
+            
+            for (var ctr = 0; ctr <= strlen; ctr++) {
+                if (ctr === strlen || self._string[ctr].charCodeAt(0) === 10 || self._string[ctr].charCodeAt(0) === 0) {
                     var lineWidth = 0;
                     var line_length = last_line.length;
                     // if last line is empty we must just increase lineNumber and work with next line
