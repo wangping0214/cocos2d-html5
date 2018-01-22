@@ -760,10 +760,13 @@ cc.EGLView = cc.Class.extend(/** @lends cc.view# */{
      */
     setViewPortInPoints: function (x, y, w, h) {
         var locFrameZoomFactor = this._frameZoomFactor, locScaleX = this._scaleX, locScaleY = this._scaleY;
-        cc._renderContext.viewport((x * locScaleX * locFrameZoomFactor + this._viewPortRect.x * locFrameZoomFactor),
+        var width = Math.round(w * locScaleX * locFrameZoomFactor);
+        var height = Math.round((h * locScaleY * locFrameZoomFactor));
+        cc._renderContext.viewport(
+            (x * locScaleX * locFrameZoomFactor + this._viewPortRect.x * locFrameZoomFactor),
             (y * locScaleY * locFrameZoomFactor + this._viewPortRect.y * locFrameZoomFactor),
-            (w * locScaleX * locFrameZoomFactor),
-            (h * locScaleY * locFrameZoomFactor));
+            width,
+            height);
     },
 
     /**
