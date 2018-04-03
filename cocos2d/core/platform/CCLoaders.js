@@ -90,6 +90,15 @@ cc._fontLoader = {
         ".svg" : "svg"
     },
     _loadFont : function(name, srcs, type){
+        if (!cc.sys.isNative){
+            if (cc.isString(srcs)){
+                if (cc.loader.resPath != null && cc.loader.resPath.length > 0){
+                    if (srcs.substr(0, cc.loader.resPath.length) != cc.loader.resPath){
+                        srcs = cc.loader.resPath + "/" + srcs;
+                    }
+                }
+            }
+        }
         var doc = document, path = cc.path, TYPE = this.TYPE, fontStyle = document.createElement("style");
         fontStyle.type = "text/css";
         doc.body.appendChild(fontStyle);
