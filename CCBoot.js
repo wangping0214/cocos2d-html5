@@ -1425,6 +1425,14 @@ var _initSys = function () {
     sys.LANGUAGE_POLISH = "pl";
 
     /**
+     * Chinese Tradition language code
+     * @memberof cc.sys
+     * @name LANGUAGE_CHINESE_TRADITION
+     * @constant
+     * @type {Number}
+     */
+    sys.LANGUAGE_CHINESE_TRADITION = "zht";
+    /**
      * Unknown language code
      * @memberof cc.sys
      * @name LANGUAGE_UNKNOWN
@@ -1683,6 +1691,10 @@ var _initSys = function () {
     var currLanguage = nav.language;
     currLanguage = currLanguage ? currLanguage : nav.browserLanguage;
     currLanguage = currLanguage ? currLanguage.split("-")[0] : sys.LANGUAGE_ENGLISH;
+
+    if (nav.language == "zh-TW" || nav.language == "zh-HK") {
+        currLanguage = sys.LANGUAGE_CHINESE_TRADITION;
+    }
 
     /**
      * Indicate the current language of the running system
