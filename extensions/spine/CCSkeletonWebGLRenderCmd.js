@@ -94,10 +94,10 @@
                 forceBlendMode = spine.BlendMode.normal;
             }
             //if (slot.data.blendMode != blendMode) {
-                if (textureAtlas) {
-                    textureAtlas.drawQuads();
-                    textureAtlas.removeAllQuads();
-                }
+            //     if (textureAtlas) {
+            //         textureAtlas.drawQuads();
+            //         textureAtlas.removeAllQuads();
+            //     }
                 //blendMode = slot.data.blendMode;
                 blendMode = forceBlendMode;
                 switch (blendMode) {
