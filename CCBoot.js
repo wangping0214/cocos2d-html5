@@ -1433,6 +1433,14 @@ var _initSys = function () {
      */
     sys.LANGUAGE_CHINESE_TRADITION = "zht";
     /**
+     * Turkish language code
+     * @memberof cc.sys
+     * @name LANGUAGE_TURKISH
+     * @constant
+     * @type {Number}
+     */
+    sys.LANGUAGE_TURKISH = "tr";
+    /**
      * Unknown language code
      * @memberof cc.sys
      * @name LANGUAGE_UNKNOWN
