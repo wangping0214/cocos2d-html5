@@ -1441,6 +1441,13 @@ var _initSys = function () {
      */
     sys.LANGUAGE_TURKISH = "tr";
     /**
+     * Vietnam language code
+     * @constant
+     * @default
+     * @type {string}
+     */
+    sys.LANGUAGE_VIETNAM = "vi";
+    /**
      * Unknown language code
      * @memberof cc.sys
      * @name LANGUAGE_UNKNOWN
