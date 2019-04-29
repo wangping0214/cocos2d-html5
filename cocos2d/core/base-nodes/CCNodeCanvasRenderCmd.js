@@ -272,10 +272,12 @@ cc.Node.RenderCmd.prototype = {
     visit: function (parentCmd) {
         var node = this._node, renderer = cc.renderer;
         // quick return if not visible
-        if (!node._visible)
-            return;
-
         parentCmd = parentCmd || this.getParentRenderCmd();
+        if (!node._visible) {
+            this._propagateFlagsDown(parentCmd);
+            return;
+        }
+
         if (parentCmd)
             this._curLevel = parentCmd._curLevel + 1;
 
@@ -287,6 +289,27 @@ cc.Node.RenderCmd.prototype = {
         this._syncStatus(parentCmd);
         this.visitChildren();
     },
+
+    _propagateFlagsDown: function (parentCmd) {
+        var locFlag = this._dirtyFlag;
+        var dirtyFlags = cc.Node._dirtyFlags;
+        var parentNode = parentCmd ? parentCmd._node : null;
+
+        if(parentNode && parentNode._cascadeColorEnabled && (parentCmd._dirtyFlag & dirtyFlags.colorDirty)) {
+            locFlag |= dirtyFlags.colorDirty;
+        }
+
+        if(parentNode && parentNode._cascadeOpacityEnabled && (parentCmd._dirtyFlag & dirtyFlags.opacityDirty)) {
+            locFlag |= dirtyFlags.opacityDirty;
+        }
+
+        if(parentCmd && (parentCmd._dirtyFlag & dirtyFlags.transformDirty)) {
+            locFlag |= dirtyFlags.transformDirty;
+        }
+
+        this._dirtyFlag = locFlag;
+    },
+
 
     _updateDisplayColor: function (parentColor) {
        var node = this._node;
