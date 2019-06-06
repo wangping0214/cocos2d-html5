@@ -387,7 +387,7 @@ cc.ControlButton = cc.Control.extend(/** @lends cc.ControlButton# */{
     },
 
     onTouchBegan: function (touch, event) {
-        if (!this.isTouchInside(touch) || !this.isEnabled() || !this.isVisible() || !this.hasVisibleParents())
+        if (!this.isTouchInside(touch) || !this.isEnabled() || !this.isVisible() || !this.hasVisibleParents() || !this.isClippingParentContainsTouch(touch))
             return false;
 
         this._isPushed = true;
@@ -402,6 +402,7 @@ cc.ControlButton = cc.Control.extend(/** @lends cc.ControlButton# */{
                 this.setHighlighted(false);
             return;
         }
+
 
         var isTouchMoveInside = this.isTouchInside(touch);
         if (isTouchMoveInside && !this._highlighted) {

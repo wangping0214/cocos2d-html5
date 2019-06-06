@@ -260,6 +260,27 @@ cc.Control = cc.Layer.extend(/** @lends cc.Control# */{
     },
 
     /**
+     * Returns a boolean value that indicates whether a touch is inside the bounds of the receiver's clipping parents. The given touch must be relative to the world.
+     *
+     * @param {cc.Touch} touch A cc.Touch object that represents a touch.
+     * @return {Boolean} YES whether a touch is inside the rect of the receiver's clipping parents.
+     */
+    isClippingParentContainsTouch: function (touch) {
+        var touchLocation = touch.getLocation(); // Get the touch position
+        var parent = this.getParent();
+        for (var c = parent; c !== null && c !== undefined; c = c.getParent()) {
+            if (c instanceof cc.ScrollView) {
+                var localPos = c.convertToNodeSpace(touchLocation);
+                if (c.isClippingToBounds() && (localPos.x < 0 || localPos.x > c._viewSize.width || localPos.y < 0 || localPos.y > c._viewSize.height)) {
+                    cc.log("isClippingParentContainsPoint blocked");
+                    return false;
+                }
+            }
+        }
+        return true;
+    },
+
+    /**
      * <p>
      * Returns an cc.Invocation object able to construct messages using a given                             <br/>
      * target-action pair. (The invocation may optionally include the sender and                            <br/>
