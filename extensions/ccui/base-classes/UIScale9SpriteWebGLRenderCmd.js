@@ -115,8 +115,8 @@
 
     proto._syncStatus = function (parentCmd){
         cc.Node.WebGLRenderCmd.prototype._syncStatus.call(this, parentCmd);
-        this._updateDisplayColor(this._displayedColor);
-        this._updateDisplayOpacity(this._displayedOpacity);
+        this._updateDisplayColor();
+        this._updateDisplayOpacity();
     };
 
     proto._updateDisplayColor = function(parentColor){
